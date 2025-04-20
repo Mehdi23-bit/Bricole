@@ -1,0 +1,6 @@
+<form method='POST' action="{% url 'sendEmail' %}">
+  {% csrf_token %}
+  {{ success.as_p}}
+<input type='email' name='email'> 
+  <button>submit</button>
+</form>

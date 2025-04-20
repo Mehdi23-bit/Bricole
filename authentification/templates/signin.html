@@ -1,0 +1,7 @@
+<form method='POST' action="{% url  'signin' %}">
+ {% csrf_token %}    
+ {% load static %}
+ <img src="{% static 'authentification/image/logo.png' %}"  alt="why note" width="500">
+ {{ form.as_p }}
+<button> Sign in</button>
+</form>
