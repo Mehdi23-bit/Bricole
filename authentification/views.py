@@ -5,6 +5,7 @@ from .Email import EmailLogin
 import random
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 # Create your views here.
 
 #view de signup 
@@ -64,6 +65,12 @@ def sign_in(request):
                return redirect("home")
           return render(request,'signin.html',{'eror':'there is a problem'})
      return render(request,'signin.html',{'form':form})
+
+
+
+def logout_view(request):
+     logout(request)
+     return redirect("signin")
 
 def sendEmail(request):
      if request.method=='POST':

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from allauth.account import views as allauth_views
 
 
 urlpatterns = [
@@ -8,8 +9,9 @@ urlpatterns = [
   path('signup',views.sign_up,name='signup'),
   path('home/',views.home,name='home'),
   path('sendemail/',views.sendEmail,name='sendEmail'),
-  path('reset_password/',auth_views.PasswordResetView.as_view(email_template_name='password_reset_email_custom.html',html_email_template_name='password_reset_email_custom.html'),name='reset_password'),
-  path('reset_password_sent/',auth_views.PasswordResetDoneView.as_view(),name='password_reset_done'),
-  path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
-  path('reset_password_complete/',auth_views.PasswordResetCompleteView.as_view(),name='password_reset_complete')
+  path('password/reset/', allauth_views.PasswordResetView.as_view(), name='account_reset_password'),
+  path('password/reset/done/', allauth_views.PasswordResetDoneView.as_view(), name='account_reset_password_done'),
+  path('password/reset/key/<uidb36>/<key>/', allauth_views.PasswordResetFromKeyView.as_view(), name='account_reset_password_from_key'),
+  path('password/reset/key/done/', allauth_views.PasswordResetFromKeyDoneView.as_view(), name='account_reset_password_from_key_done'),
+  path('logout/',views.logout_view,name='logout')
 ]

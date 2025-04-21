@@ -53,9 +53,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'authentification',
+    'allauth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.account',
        
 ]
+
+SOCIALACCOUNT_PROVIDERS={
+    'google':{
+        "SCOOP":[
+"profile","email"
+        ],
+        "AUTH_PARAMS":{"access_type":"online"}
+    }
+}
 
 
 
@@ -67,6 +81,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
+    'Bricole.middleware.block_allauth.BlockAllauthViewsMiddleware',
 ]
 
 ROOT_URLCONF = 'Bricole.urls'
@@ -74,7 +90,7 @@ ROOT_URLCONF = 'Bricole.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -155,6 +171,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='authentification.Users'    
 LOGIN_REDIRECT_URL = 'home'  
 LOGOUT_REDIRECT_URL = 'signin'
+
+
+
+
+AUTHENTICATION_BACKENDS=(
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend"
+)
+
+SOCIALACCOUNT_LOGIN_ON_GET = True   
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 
 #Email settings
