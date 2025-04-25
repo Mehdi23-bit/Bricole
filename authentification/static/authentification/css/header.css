@@ -1,0 +1,86 @@
+*{
+    margin:0;
+    padding: 0;
+}
+header{
+   background-color: white;
+    display:flex;
+    width: 1854px;
+    height: 80px;
+    justify-content: center;
+    align-items: center;
+}
+
+header nav{
+    display: flex;         /* Makes children (the links) align horizontally */
+  justify-content: space-between; /* Optional: spreads them out */
+  align-items: center;
+  width:800px;
+}
+.header-div{
+    width: 1400px;
+    height:80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav a{
+    text-decoration: none;
+    
+    color:#62646A;
+    font:400 18px/24px Macan,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-weight:bold;
+}
+
+
+
+#language{
+width: 90px; 
+height: 27px;  
+display: flex;
+align-items: center;
+justify-content:space-between
+
+}
+
+#language img{
+width:14px;
+height:14px;
+}
+
+.logo{
+    font-family: 'Poppins', sans-serif; /* clean & modern font */
+    font-size: 2rem;
+    font-weight: 700;
+    color: Black;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    user-select: none;
+}
+
+.gradient-text {
+    background: linear-gradient(270deg, #ff6a00, #ee0979, #00c9ff, #ff6a00);
+    background-size: 800% 800%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 8s ease infinite;
+  }
+
+  @keyframes gradientMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+#join{
+  border-radius: 5px;
+  border:2px solid white;
+  padding: 9px 25px  ;
+}  

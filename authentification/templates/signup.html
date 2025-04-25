@@ -1,0 +1,7 @@
+<form method="POST" action="{% url 'signup' %}">
+    {% include "message.html" %}
+    {% csrf_token %}
+    {{ form.as_p }}
+    <a href="{% url 'signin' %}"> you already have an account </a>
+    <button type="submit">Send</button>
+</form>

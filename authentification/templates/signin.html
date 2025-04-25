@@ -1,0 +1,55 @@
+<form method='POST' action="{% url  'signin' %}">
+
+    {% include "message.html" %}
+ {% csrf_token %}    
+ {% load static %}
+ {% load socialaccount %}
+ {% include 'header.html' %}
+ {{ form.as_p }}
+ <a href="#" onclick="openGoogleLogin(); return false;">Sign in with Google</a>
+
+ <script>
+ function openGoogleLogin() {
+    
+    console.log("popup.location.hostname")
+   const googleLoginUrl = "{% provider_login_url 'google' method='js_callback' %}";
+   
+   // Set popup dimensions
+   const width = 600;
+   const height = 700;
+   const left = (window.innerWidth - width) / 3;
+   const top = (window.innerHeight - height) / 2;
+   
+   // Open popup window
+   const popup = window.open(
+     googleLoginUrl, 
+     "googleLogin", 
+     `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+   );
+   
+   // Poll the popup to check when authentication is complete
+   
+     try {
+        console.log(window.location.hostname)
+       // Check if we're back on our domain
+       while (popup.location.hostname !== window.location.hostname) {
+        console.log("still nothing")
+       }
+
+       clearInterval(checkPopup);
+       // Get the redirect URL with authentication info
+       const redirectUrl = popup.location.href;
+       // Close the popup
+       popup.close();
+       // Redirect the main window to the authenticated URL
+       window.location.href = redirectUrl;
+     } catch(e) {
+       // Cross-origin error means we're still on Google's domain - keep polling
+     }
+   
+    }
+ </script>
+ <a href="{% url 'signup' %}"> you don't have an account click here </a>
+ <a href="{% url 'account_reset_password' %}">Forgotten password</a>
+<button> Sign in</button>
+</form>

@@ -1,0 +1,10 @@
+<h1>home</h1>
+
+{% include "message.html" %}
+
+<form method='POST' action="{% url 'profile' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit'>
+</form>
+<a href="{% url 'logout' %}">logout</a> 
