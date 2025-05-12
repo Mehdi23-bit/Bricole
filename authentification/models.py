@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Users(AbstractUser):
     ROLE_CHOICES=[
-        ('arisan','ARTISAN'),
+        ('artisan','ARTISAN'),
         ('client','CLIENT'),
         ('admin','admin')
     ]

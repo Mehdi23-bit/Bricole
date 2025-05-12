@@ -1,0 +1,473 @@
+{% if service %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ service.title }}</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #e74c3c;
+            --accent-color: #2ecc71;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --light-bg: #ecf0f1;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #f5f7fa;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin: 40px 0 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--secondary-color);
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 30px;
+        }
+        
+        .artisan-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .artisan-photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .artisan-photo:hover {
+            transform: scale(1.05);
+            border-color: var(--secondary-color);
+        }
+        
+        .artisan-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .service-image-container {
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .service-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .service-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .service-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border-left: 6px solid var(--primary-color);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .item {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .item-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .item-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        
+        .item-category {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 5px 0 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 6px rgba(231, 76, 60, 0.2);
+        }
+        
+        .item-description {
+            font-size: 1rem;
+            margin: 10px 0 0;
+            color: var(--light-text);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-top: 60px;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+        }
+        
+        #sealso {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        #class-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .move {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .move:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .service-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .artisan-profile {
+                width: 100%;
+                padding: 10px 15px;
+            }
+            
+            .service-image {
+                height: 300px;
+            }
+            
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            #sealso {
+                grid-template-columns: auto 1fr auto;
+            }
+            
+            #class-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-description {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ service.title }} </h1>
+    
+    <div class="artisan-profile">
+        <img class="artisan-photo" src="{{ service.artisan.photo.url }}" alt="{{ service.artisan.username }}">
+        <p class="artisan-name">{{ service.artisan.username }}</p>
+    </div>
+    
+    <div class="service-image-container">
+        <img class="service-image" src="http://127.0.0.1:8000/media/default.jpg" alt="{{ service.title }}">
+    </div>
+    
+    <p class="service-description">{{ service.description }}</p>
+    
+    <h1 class="section-title">More from {{ service.artisan.username }}</h1>
+    <div class="items-grid">
+        {% for item in more %}
+        <a href="{% url 'ds' id=item.id %}">
+        <div class="item">
+            <img src="http://127.0.0.1:8000/media/default.jpg" alt="{{ item.title }}">
+            <div class="item-content">
+                <p class="item-title">{{ item.title }}</p>
+                <span class="item-category">{{ item.categorie }}</span>
+                <p class="item-description">{{ item.description }}</p>
+            </div>
+        </div>
+    </a>
+        {% endfor %}
+    </div>
+    
+    <h1 class="section-title">See Also</h1>
+    <div id='sealso'>
+        <span class='move'>&lt;</span>
+        <div id='class-card'>
+         {% for item in first %}
+        <div class="item">
+            <img src="http://127.0.0.1:8000/media/default.jpg" alt="{{ item.title }}">
+            <div class="item-content">
+                <p class="item-title">{{ item.title }}</p>
+                <span class="item-category">{{ item.categorie }}</span>
+                <p class="item-description">{{ item.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+        <span class='move'>&gt;</span>
+    </div>
+<form method='POST' id='demande-form' enctype='multipart/form-data'>
+     {% csrf_token %} 
+{{ form.as_p }}
+
+</form>   
+<input type='submit' id='submit'> 
+<script>
+  let submit=  document.getElementById('submit')
+  submit.addEventListener('click', function(e) {
+    
+        console.log('malk akhoay l3ziz')
+      
+        const form = document.getElementById('demande-form');
+        const formData = new FormData(form); 
+      
+        fetch("{% url  'ContactArtisan' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+            
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("success "+data.message)
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      });
+let seeAlso = {{ see_also|safe }}
+let array = devise_array(6, seeAlso)
+let page_nbr = 0
+let moves = Array.from(document.getElementsByClassName('move'))
+
+moves.forEach(icon => {
+    icon.addEventListener("click", (e) => {
+        if (e.target.textContent === '<') {
+            page_nbr--;
+        } else if (e.target.textContent === '>') {
+            page_nbr++;
+        }
+        
+        const mod = mathMod(page_nbr, (array.length));
+        const current = array[mod]
+        const card = document.getElementById('class-card')
+        
+        // Clear the current items
+        card.innerHTML = "";
+        
+        // Add new items with animation
+        current.forEach(element => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item';
+            itemDiv.style.opacity = '0';
+            itemDiv.style.transform = 'translateY(20px)';
+            
+            itemDiv.innerHTML = `
+                <img src="http://127.0.0.1:8000/media/default.jpg" alt="${element.title}">
+                <div class="item-content">
+                    <p class="item-title">${element.title}</p>
+                    <span class="item-category">${element.categorie}</span>
+                    <p class="item-description">${element.description}</p>
+                </div>
+            `;
+            
+            card.appendChild(itemDiv);
+            
+            setTimeout(() => {
+                itemDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                itemDiv.style.opacity = '1';
+                itemDiv.style.transform = 'translateY(0)';
+            }, 50);
+        });
+    });
+});
+
+function devise_array(chunks, array) {
+    let chunks_array = []
+    for (let i = 0; i < array.length; i += chunks) {
+        chunks_array.push(array.slice(i, i + chunks))
+    }
+    return chunks_array
+}
+
+function mathMod(a, n) {
+    return ((a % n) + n) % n;
+}
+
+// Add scroll to top button
+const scrollBtn = document.createElement('button');
+scrollBtn.innerHTML = '&uarr;';
+scrollBtn.style.position = 'fixed';
+scrollBtn.style.bottom = '30px';
+scrollBtn.style.right = '30px';
+scrollBtn.style.zIndex = '99';
+scrollBtn.style.border = 'none';
+scrollBtn.style.outline = 'none';
+scrollBtn.style.backgroundColor = 'var(--primary-color)';
+scrollBtn.style.color = 'white';
+scrollBtn.style.cursor = 'pointer';
+scrollBtn.style.padding = '15px';
+scrollBtn.style.borderRadius = '50%';
+scrollBtn.style.fontSize = '18px';
+scrollBtn.style.width = '50px';
+scrollBtn.style.height = '50px';
+scrollBtn.style.display = 'flex';
+scrollBtn.style.alignItems = 'center';
+scrollBtn.style.justifyContent = 'center';
+scrollBtn.style.opacity = '0';
+scrollBtn.style.transition = 'opacity 0.3s, background-color 0.3s';
+scrollBtn.style.boxShadow = 'var(--box-shadow)';
+
+scrollBtn.onclick = function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+};
+
+window.onscroll = function() {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        scrollBtn.style.opacity = '1';
+    } else {
+        scrollBtn.style.opacity = '0';
+    }
+};
+
+scrollBtn.onmouseover = function() {
+    this.style.backgroundColor = 'var(--secondary-color)';
+};
+
+scrollBtn.onmouseout = function() {
+    this.style.backgroundColor = 'var(--primary-color)';
+};
+
+document.body.appendChild(scrollBtn);
+
+    
+  
+</script>
+</body>
+</html>
+{% else %}
+<!-- No service data available -->
+<div style="height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <h1 style="color: #3498db; margin-bottom: 20px;">No Service Data Available</h1>
+    <p style="font-size: 1.2rem; color: #7f8c8d; text-align: center;">The requested service information could not be found.<br>Please check back later or try another service.</p>
+</div>
+{% endif %}

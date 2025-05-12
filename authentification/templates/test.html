@@ -1,0 +1,277 @@
+<style>
+  :root {
+    --primary-color: #3498db;
+    --primary-dark: #2980b9;
+    --text-color: #333;
+    --light-gray: #f5f7fa;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --transition: all 0.3s ease;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 30px;
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  .search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  #search {
+    padding: 15px 20px;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid #e1e5ea;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: var(--transition);
+    box-shadow: var(--box-shadow);
+  }
+
+  #search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+  }
+
+  #search::placeholder {
+    color: #a0a0a0;
+  }
+
+  .search-icon {
+    position: absolute;
+    right: calc(50% - 230px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0a0a0;
+    pointer-events: none;
+  }
+
+  .items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .item {
+    background-color: white;
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  }
+
+  .item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+  }
+
+  .item-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+
+  .item-category {
+    display: inline-block;
+    background-color: rgba(52,152,219,0.1);
+    color: var(--primary-color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .item-description {
+    color: #555;
+    flex-grow: 1;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    font-size: 16px;
+  }
+
+  .pagination a {
+    padding: 12px 18px;
+    margin: 0 5px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    font-weight: 500;
+  }
+
+  .pagination a:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .pagination .current {
+    font-weight: bold;
+    padding: 12px 18px;
+    color: var(--text-color);
+  }
+
+  .empty-message {
+    text-align: center;
+    color: #777;
+    font-size: 18px;
+    font-style: italic;
+    padding: 40px 0;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 768px) {
+    .items {
+      grid-template-columns: 1fr;
+    }
+    body {
+      padding: 20px 15px;
+    }
+    .search-icon {
+      right: 25px;
+    }
+  }
+  #loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #555;
+  }
+</style>
+<div id="loading">loading.....</div>
+
+<div id="main" style='display:none;'>
+  {% if user.role == "artisan" %}
+
+  {% include "artisan_header.html" %}
+ 
+  {% else %}
+ 
+  {% include "header.html" %}
+  {% endif %}
+<div class="container">
+  <div class="search-container">
+    <input type='text' id='search' placeholder='Search for anything...'>
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </div>
+
+  <div class="items">
+    {% for item in page_obj %}
+    <a href="{% url 'ds' id=item.id %}">
+      <div class="item">
+       
+        <img src='http://127.0.0.1:8000/media/default.jpg' alt='{{ item.title }}'>
+        <p class="item-title">{{ item.title }}</p>
+        <p class="item-category">{{ item.categorie }}</p>
+        <p class="item-description">{{ item.description }}</p>
+      </div>
+    </a>
+    {% empty %}
+      <p class="empty-message">No results found. Try a different search term.</p>
+    {% endfor %}
+  </div>
+
+  {% if page_obj %}
+    <div class="pagination">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page=1&key={{ keyword }}" title="First page">&laquo; First</a>
+              <a href="?page={{ page_obj.previous_page_number }}&key={{ keyword }}" title="Previous page">Previous</a>
+          {% endif %}
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}&key={{ keyword }}" title="Next page">Next</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}&key={{ keyword }}" title="Last page">Last &raquo;</a>
+          {% endif %}
+      </span>
+    </div>
+  {% endif %}
+</div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById('search');
+    
+    // Set input value from URL if exists
+    const urlParams = new URLSearchParams(window.location.search);
+    const keywordParam = urlParams.get('key');
+    if (keywordParam) {
+      searchInput.value = keywordParam;
+    }
+    
+    // Handle search input changes
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    searchInput.addEventListener('change', () => {
+      performSearch();
+    });
+    
+    function performSearch() {
+      const value = searchInput.value.trim();
+      if (value) {
+        const url = new URL("http://127.0.0.1:8000/test/");
+        url.searchParams.append('key', value);
+        window.location.href = url.toString();
+      }
+    }
+  });
+
+  const promise = new Promise(function(resolve, reject) {
+    setTimeout(() => {
+        resolve("done");
+    }, 4000);
+});
+
+promise.then(function(resolve) {
+    
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("main").style.display = "block";
+});
+</script>

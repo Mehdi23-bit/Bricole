@@ -1,0 +1,115 @@
+<style>
+    #loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #555;
+      }
+      
+    .profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+
+    .service-card {
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .service-card h1 {
+        font-size: 20px;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .service-card h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    .service-card p {
+        margin-bottom: 10px;
+        color: #444;
+    }
+
+    .service-card img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+
+    .service-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .service-actions button,
+    .service-actions a {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .service-actions button {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .service-actions a {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+
+<!-- Profile photo -->
+<div id="loading">loading.....</div>
+<!-- Services list -->
+<div id="main" style='display:none;'>
+{% for service in services %}
+<form method="GET" action="{% url 'modify' %}">
+    {% csrf_token %}
+    <div class="service-card">
+        <h1>{{ service.title }}</h1>
+        <h3>{{ service.categorie }}</h3>
+        <p>{{ service.description }}</p>
+
+        {% for img in service.photos_array %}
+            <img src="{{ img }}" alt="Service Photo">
+        {% endfor %}
+
+        <div class="service-actions">
+            <button name="id" value="{{ service.id }}">Modify</button>
+            <a href="{% url 'delete' %}?id={{ service.id }}">Delete</a>
+        </div>
+    </div>
+</form>
+{% endfor %}
+</div>
+<script>
+    const promise = new Promise(function(resolve, reject) {
+        setTimeout(() => {
+            resolve("done");
+        }, 4000);
+    });
+    
+    promise.then(function(resolve) {
+      
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("main").style.display = "block";
+    });
+</script>

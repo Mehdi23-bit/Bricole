@@ -1,10 +1,26 @@
-<h1>home</h1>
+<body>
 
-{% include "message.html" %}
+{% if user.role == "artisan" %}
 
-<form method='POST' action="{% url 'profile' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit'>
-</form>
-<a href="{% url 'logout' %}">logout</a> 
+ {% include "artisan_header.html" %}
+ {% else %}
+
+ {% include "header.html" %}
+ {% endif %}
+ <input type="text" id="search">
+
+<script>
+    document.addEventListener("DOMContentLoaded",(e)=>{
+        console.log("hello man i hope you are enjoying")
+        document.getElementById('search').addEventListener('change',(e)=>{
+            value=e.target.value
+            console.log("waaaaaaaa")
+            const url = new URL("http://127.0.0.1:8000/test/");
+            
+            url.searchParams.append('key', value);
+            window.location.href = url.toString();
+        })  
+    })
+    
+</script>
+   </body>    

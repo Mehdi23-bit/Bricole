@@ -1,0 +1,165 @@
+body{
+    display: flex;
+    flex-direction: column;
+}
+
+.bg-video{
+    width:100%;
+    position: absolute;
+    top:0;
+    height: 100vh;
+    object-fit:fill; 
+   
+     z-index:-1;
+}
+
+
+
+.inspiring{
+   
+    color: white;
+ font-weight: 700;
+ font-size: 3.5rem;
+ line-height: 1.2;
+ margin-bottom: -0.5rem;
+ margin-left:100px;
+ letter-spacing: -0.03em;
+ 
+}
+.text{
+   
+    height:300px;
+    width:800px;
+   
+}
+.search-bar{
+  
+    width:800px;
+    height:60px;
+   border-radius: 15px;
+   border:2px solid black;
+   padding: 15px;
+   margin-left: 100px;
+   margin-top: 100px;
+   
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   font-size: medium;
+
+}
+
+.text-search{
+    color:white;
+    
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+    width:600px; 
+    font-size: x-large ;
+    margin-top:60px;
+    margin-left:100px;
+}
+
+.search-icon{
+    width:30px;
+    height:30px;
+position: relative;
+cursor: pointer;
+left:857px;
+top:-44px;
+}
+
+.suggestion{
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -58px;
+    margin-left: 101px;
+    width:600px;
+}
+
+.suggestion button{
+    margin-top:100px;
+    background-color: rgba(255, 255, 255, 0.1); /* semi-transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.3);  /* subtle border */
+    backdrop-filter: blur(10px); /* blur the background */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    font-size: medium;
+   
+}
+
+#read-more{
+   
+text-decoration: none;
+color: black;
+padding: 9px 25px; 
+background-color:white;
+border: 2px solid black;
+border-radius:5px;
+
+}
+.hero_text{
+display: block;
+margin-bottom: 400px;
+margin-top:175px;
+height: 800px;
+}
+
+#read-more_div{
+    margin-top:65px;
+    margin-left: 100px;
+
+}
+.video-section{
+    height: 823px;
+}
+
+#category-section{
+    margin-top:60px;
+   display:block;
+   background-color: rgb(114, 136, 116);
+   height: 700px;
+
+
+}
+
+.category{
+    width:120px;
+    height:120px;
+    border-radius: 6px;
+    box-shadow: 0 0 2px 2px black;
+   
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center ;
+    text-decoration:none;
+    color:white;
+
+    font:400 16px/24px Macan,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-weight: 700;
+}
+.category-div{
+    width:1300px;
+    margin-left: auto;
+    margin-right: auto;
+    display:flex;
+    justify-content: space-around;
+    
+   
+}
+
+#category-section h1{
+    margin-left:20px;
+    margin-bottom: 40px;
+    font-size: 3rem;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color:white;
+}
+.icon{
+width: 30px;
+height: 30px;
+}

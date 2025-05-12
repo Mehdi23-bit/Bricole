@@ -84,3 +84,22 @@ height:14px;
   border:2px solid white;
   padding: 9px 25px  ;
 }  
+
+
+
+.bell-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.bell-icon:hover {
+  transform: scale(1.1);
+}
+
+#noti_span{
+  
+}

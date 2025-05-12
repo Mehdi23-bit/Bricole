@@ -1,0 +1,18 @@
+<form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+  
+    <label for="title">Title:</label><br>
+    <input type="text" id="title" name="title" required><br><br>
+  
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description" rows="4" required></textarea><br><br>
+  
+    <label for="category">Category:</label><br>
+    <input type="text" id="category" name="category" required><br><br>
+  
+    <label for="files">Upload Photos:</label><br>
+    <input type="file" id="files" name="files" multiple><br><br>
+  
+    <button type="submit">Submit</button>
+  </form>
+  

@@ -42,5 +42,28 @@ class ProfileForm(forms.ModelForm):
         fields=('photo','email')       
 
 class UploadFileForm(forms.Form):
-    username = forms.CharField(max_length=50)
+    id = forms.IntegerField()
     file = forms.FileField()        
+
+
+
+
+
+
+
+class UserClient(UserCreationForm):
+   
+    password1 = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput()
+    )
+    password2 = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput()
+    )
+    
+    class Meta:
+        model = Users
+        fields = ('first_name', 'last_name', 'email','password1','password2')
+
+

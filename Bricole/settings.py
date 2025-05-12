@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
+from pathlib import Path 
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,7 +42,14 @@ SECRET_KEY = 'django-insecure-@)5!asmp%^@7y^j+k+ety0lq_8lug)29gec1wg&anm!=dgb02x
 DEBUG = True
 
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Application definition
 
@@ -52,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'authentification',
@@ -60,6 +68,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.account',
     'Services',
+    'demand',
+    'channels',
+    
        
 ]
 
@@ -103,9 +114,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Bricole.wsgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
+ASGI_APPLICATION = "Bricole.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -164,6 +180,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -189,7 +206,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 MEDIA_ROOT='/home/elmehdi/Desktop/media'
 
-
+MEDIA_URL='media/'
 
 
 

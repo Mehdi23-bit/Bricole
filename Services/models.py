@@ -1,7 +1,9 @@
 from django.db import models
 from authentification.models import Users
 
-class Services(models.Model):
+class Service(models.Model):
+    
+
     TYPES_ARTISAN = [
         ('electricien', 'Électricien'),
         ('plombier', 'Plombier'),
@@ -31,11 +33,12 @@ class Services(models.Model):
         ('nettoyeur', 'Nettoyeur'),
         ('electricien_auto', 'Électricien auto'),
     ]
-    title=models.CharField(max_length=30,null=True)
+    
+    title=models.CharField(max_length=255,null=True)
     description=models.TextField(null=False)
-    photos=models.CharField(max_length=100)
+    photos=models.TextField()
     categorie=models.CharField(max_length=30,choices=TYPES_ARTISAN)
-    Note=models.FloatField()
+    Note=models.FloatField(default=0)
     artisan=models.ForeignKey(Users,on_delete=models.CASCADE)
     class Meta:
-        db_table='services'
+        db_table='services' 
