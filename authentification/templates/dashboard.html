@@ -1,6 +1,560 @@
-<h1>dashboard</h1>
-{% for demande in demandes %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Management Dashboard</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --gray: #9ca3af;
+        }
 
-<p>{{ demande.titre }}</p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
 
-{% endfor %}
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            text-align: center;
+            font-size: 1.75rem;
+            color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .client-photo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .card-title {
+            margin-left: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-description {
+            margin-bottom: 1rem;
+            color: #4b5563;
+            font-size: 0.95rem;
+        }
+
+        .card-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-images img {
+            width: calc(33% - 0.5rem);
+            border-radius: 4px;
+            object-fit: cover;
+            height: 80px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-accept {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background-color: #059669;
+        }
+
+        .btn-decline {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-decline:hover {
+            background-color: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+
+        .tab-container {
+            display: flex;
+            margin: 1rem 0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background-color: #e5e7eb;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background-color: white;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* History tabs */
+        .history-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .history-tab {
+            padding: 0.5rem 1rem;
+            background-color: #e5e7eb;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .history-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .status-completed {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-declined {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "artisan_header.html" %}
+
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab active" data-target="new-services">New Requests</div>
+            <div class="tab" data-target="current-services">Active Services</div>
+            <div class="tab" data-target="history-services">Service History</div>
+        </div>
+
+        <!-- New Service Requests -->
+        <div id="new-services" class="tab-content active">
+            <h2 class="section-title">New Service Requests</h2>
+            <div id="new" class="card-grid">
+                {% for demande in new_demandes %}
+                <div class="card">
+                    <div class="card-header">
+                        <img src="{{ demande.client.photo.url }}" alt="Client" class="client-photo">
+                        <h3 class="card-title">{{ demande.demande.titre }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">{{ demande.demande.description }}</p>
+                        <div class="card-images">
+                            {% for image in demande.imgs %}
+                            <img src="{{ image }}" alt="Service image">
+                            {% endfor %}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-decline decline" data-id="{{ demande.demande.id }}">Decline</button>
+                            <button class="btn btn-accept accept" data-id="{{ demande.demande.id }}">Accept</button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>No new service requests at the moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Current Services -->
+        <div id="current-services" class="tab-content">
+            <h2 class="section-title">Active Services</h2>
+            <div id="current" class="card-grid">
+                {% for demande in cur_demandes %}
+                <div class="card" >
+                    <div class="card-header">
+                        <img src="{{ demande.client.photo.url }}" alt="Client" class="client-photo">
+                        <h3 class="card-title">{{ demande.demande.titre }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">{{ demande.demande.description }}</p>
+                        <div class="card-images">
+                            {% for image in demande.imgs %}
+                            <img src="{{ image }}" alt="Service image">
+                            {% endfor %}
+                        </div>
+                        <span class="status-badge status-completed">In Progress</span>
+                        <button class='complete' data-id={{ demande.demande.id }}>complete</button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>No active services at the moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Service History -->
+        <div id="history-services" class="tab-content">
+            <h2 class="section-title">Service History</h2>
+            
+            <div class="history-tabs">
+                <div class="history-tab active" data-target="completed">Completed</div>
+                <div class="history-tab" data-target="declined">Declined</div>
+            </div>
+            
+            <div id="completed" class="history-tab-content active">
+                <div id="history" class="card-grid">
+                    {% for demande in hist_demandes %}
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ demande.client.photo.url }}" alt="Client" class="client-photo">
+                            <h3 class="card-title">{{ demande.demande.titre }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-description">{{ demande.demande.description }}</p>
+                            <div class="card-images">
+                                {% for image in demande.imgs %}
+                                <img src="{{ image }}" alt="Service image">
+                                {% endfor %}
+                            </div>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <p>No completed services yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div id="declined" class="history-tab-content" style="display: none;">
+                <div id="declined-list" class="card-grid">
+                    {% for demande in dec_demandes %}
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ demande.client.photo.url }}" alt="Client" class="client-photo">
+                            <h3 class="card-title">{{ demande.demande.titre }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-description">{{ demande.demande.description }}</p>
+                            <div class="card-images">
+                                {% for image in demande.imgs %}
+                                <img src="{{ image }}" alt="Service image">
+                                {% endfor %}
+                            </div>
+                            <span class="status-badge status-declined">Declined</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <p>No declined services yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+
+        function complete(){
+            const complete=document.querySelectorAll('.complete')
+            complete.forEach(element=>{
+                element.addEventListener("click",(e)=>{
+                   let id=e.target.dataset.id
+                   const result = fetch("{% url 'change_status' %}", {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRFToken': "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        id: id
+                    })
+                });
+                
+
+                })
+            })
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to current tab
+                this.classList.add('active');
+                
+                // Hide all tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show the selected tab content
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+        
+        // History tabs functionality
+        document.querySelectorAll('.history-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all history tabs
+                document.querySelectorAll('.history-tab').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to current history tab
+                this.classList.add('active');
+                
+                // Hide all history tab content
+                document.querySelectorAll('.history-tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // Show the selected history tab content
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).style.display = 'block';
+            });
+        });
+
+        // Original Accept/Decline functionality
+        function Accept() {
+            let accept = document.getElementsByClassName("accept");
+            
+            Array.from(accept).forEach(element => {
+                element.addEventListener("click", async function(e) {
+                    id = e.target.dataset.id;
+                    console.log("my id is " + id);
+                    
+                    const result = await fetch("{% url 'change_status' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({
+                            id: id
+                        })
+                    });
+                    
+                    let parent = e.target.closest('.card');
+                    const cloned = parent.cloneNode(true);
+                    
+                    // Remove action buttons
+                    cloned.querySelector(".card-actions").remove();
+                    const complete=document.createElement("button")
+                    complete.textContent="Complete"
+                    complete.classList.add("complete")
+                    cloned.appendChild(complete) 
+                    
+                    // Add status badge
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = 'status-badge status-completed';
+                    statusBadge.textContent = 'In Progress';
+                    cloned.querySelector('.card-body').appendChild(statusBadge);
+                    
+                    // Move to current services
+                    document.getElementById("current").appendChild(cloned);
+                    parent.remove();
+                    
+                    // Show notification
+                    showNotification('Service request accepted successfully!', 'success');
+                });
+            });
+            
+            let decline = document.getElementsByClassName("decline");
+            
+            Array.from(decline).forEach(element => {
+                element.addEventListener("click", async function(e) {
+                    id = e.target.dataset.id;
+                    console.log("my id is " + id);
+                    
+                    const result = fetch("{% url 'change_status' %}", {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRFToken': "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({
+                            id: id
+                        })
+                    });
+                    
+                    let parent = e.target.closest('.card');
+                    const cloned = parent.cloneNode(true);
+                    
+                    // Remove action buttons
+                    cloned.querySelector(".card-actions").remove();
+                    
+                    // Add status badge
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = 'status-badge status-declined';
+                    statusBadge.textContent = 'Declined';
+                    cloned.querySelector('.card-body').appendChild(statusBadge);
+                    
+                    // Move to declined services
+                    document.getElementById("declined-list").appendChild(cloned);
+                    parent.remove();
+                    
+                    // Show notification
+                    showNotification('Service request declined', 'error');
+                });
+            });
+        }
+        
+        // Notification system
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification ' + type;
+            notification.textContent = message;
+            
+            // Style the notification
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '12px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '500';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.2)';
+            notification.style.transition = 'all 0.3s ease';
+            
+            if (type === 'success') {
+                notification.style.backgroundColor = '#10b981';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#ef4444';
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Initialize functionality
+        Accept();
+       complete();
+    </script>
+</body>
+</html>

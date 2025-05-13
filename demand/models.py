@@ -13,8 +13,8 @@ class Demande(models.Model):
     titre=models.CharField(max_length=30)
     description=models.TextField()
     photos=models.TextField()
-    artisan=models.ForeignKey(Users,related_name='artisan',on_delete=models.CASCADE)
-    client=models.ForeignKey(Users,related_name='client',on_delete=models.CASCADE)
+    artisan=models.ForeignKey(Users,related_name='demande_artisan_set',on_delete=models.CASCADE)
+    client=models.ForeignKey(Users,related_name='demande_client_set',on_delete=models.CASCADE)
     service=models.ForeignKey(Service,on_delete=models.CASCADE,null=True)
     status=models.CharField(max_length=30,choices=choices,default='pending')
     class Meta:

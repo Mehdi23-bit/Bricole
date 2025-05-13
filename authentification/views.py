@@ -439,7 +439,7 @@ def ContactArtisan(request):
            print(type(file))
            name=remove_gaps(file.name)
                       
-           SaveFiles().save(file,name,f"Demande/{user.username}_{artisan.username}/{title}")
+           SaveFiles().save(file,name,f"Demande/{user.username}/{title}")
            photos+=f"Demande/{user.username}/{title}/{name}*"
           
          
@@ -482,9 +482,74 @@ def mark_as_done(request):
             
 
 def dashboard(request):
-    user_demandes=Demande.objects.filter(artisan_id=request.user.id)
-    print(user_demandes)
-    return render(request,"dashboard.html",{"demandes":user_demandes})     
+    def pack_demandes(demandes):
+        new_demandes=[]
+        for demande in demandes:
+        
+            imgs = extract_pictures(f"http://{request.META['SERVER_NAME']}:{request.META['SERVER_PORT']}{settings.MEDIA_URL}", demande.photos)
+            print(demande.photos)
+            print(imgs)
+            new_demandes.append({
+                'demande':demande,
+                'imgs':imgs
+            })
+        return new_demandes    
+    pending_demandes=request.user.demande_artisan_set.filter(status='pending')
+    current_demandes=request.user.demande_artisan_set.filter(status='accepte')
+    history_demandes=request.user.demande_artisan_set.filter(status='finished')
+    declined_demandes=request.user.demande_artisan_set.filter(status='declined')
+    new_demandes=pack_demandes(pending_demandes)
+    cur_demandes=pack_demandes(current_demandes)
+    hist_demandes=pack_demandes(history_demandes)
+    dec_demandes=pack_demandes(declined_demandes)
+    
+    return render(request,"dashboard.html",{"new_demandes":new_demandes,"cur_demandes":cur_demandes,"hist_demandes":hist_demandes,"dec_demandes":dec_demandes})     
    
-
+def change_status(request):
+    print(request)
+    if request.method=='POST':
+        print("post")
+        id=json.loads(request.body).get('id')
+        demande=Demande.objects.get(id=id)
+        demande.status='accepte'
+        demande.save()
+        send_notification_to_user(
+                user_id=demande.client.id,
+                message=f'your demande has been accepted by {demande.artisan.username}',
+                demande_id=demande.id,
+                sender=request.user.username,
+                     
+            )
+        return JsonResponse({"message":"success"})
+    elif request.method=='PATCH':
+        print("patch")
+        id=json.loads(request.body).get('id')
+        demande=Demande.objects.get(id=id)
+        demande.status='declined'
+        demande.save()
+        send_notification_to_user(
+                user_id=demande.client.id,
+                message=f'sorry your demande has been declined by {demande.artisan.username}',
+                demande_id=demande.id,
+                sender=request.user.username,
+                     
+            )
+        return JsonResponse({"message":"success"})
+    elif request.method=='PUT':
+       
+        id=json.loads(request.body).get('id')
+           
+        demande=Demande.objects.get(id=id)
+        demande.status='finished'
+        demande.save()
+        send_notification_to_user(
+                user_id=demande.client.id,
+                message=f'congrats your service has been done',
+                demande_id=demande.id,
+                sender=request.user.username,
+                     
+            )
+        return JsonResponse({"message":"success"})    
+    else:
+         return JsonResponse({"message":"error"})            
      
