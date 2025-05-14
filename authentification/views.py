@@ -552,4 +552,8 @@ def change_status(request):
         return JsonResponse({"message":"success"})    
     else:
          return JsonResponse({"message":"error"})            
-     
+
+from .tasks import send_email_to_user     
+def harasse(request):
+    send_email_to_user.delay(3)
+    return HttpResponse("harasse")     

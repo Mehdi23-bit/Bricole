@@ -115,6 +115,20 @@
 
   notificationSocket.onmessage = function(e) {
     playNotificationSound()
+    if ("Notification" in window) {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification("🔔 Test Notification", {
+            body: "It works! 🎉",
+            icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png" // optional
+          });
+        } else {
+          console.log("Notification permission denied.");
+        }
+      });
+    } else {
+      console.log("Browser does not support notifications.");
+    }
     
     const data = JSON.parse(e.data);
     console.log(e)

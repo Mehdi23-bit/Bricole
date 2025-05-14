@@ -374,6 +374,13 @@
 
     <script>
         // Tab functionality
+        const notificationSocket1 = new WebSocket(
+    'ws://' + window.location.host + '/ws/notifications/'
+  );
+  notificationSocket1.onmessage=function(e){
+    complete()
+    Accept()
+  }
 
         function complete(){
             const complete=document.querySelectorAll('.complete')
@@ -386,10 +393,16 @@
                         'X-CSRFToken': "{{ csrf_token }}"
                     },
                     body: JSON.stringify({
-                        id: id
-                    })
+                        id: id})
                 });
                 
+                const cloned =e.target.parentElement.cloneNode(true)
+                e.target.parentElement.remove()
+                cloned.querySelector('.complete').remove()
+                console.log("set this.getAttribute")
+                
+                console.log("end setting this.getAttribute")
+                document.getElementById("history").appendChild(cloned)
 
                 })
             })
@@ -451,17 +464,22 @@
                         body: JSON.stringify({
                             id: id
                         })
+                       
                     });
+                   
                     
                     let parent = e.target.closest('.card');
                     const cloned = parent.cloneNode(true);
                     
                     // Remove action buttons
                     cloned.querySelector(".card-actions").remove();
-                    const complete=document.createElement("button")
-                    complete.textContent="Complete"
-                    complete.classList.add("complete")
-                    cloned.appendChild(complete) 
+                    const complete_=document.createElement("button")
+                    complete_.textContent="Complete"
+                    complete_.classList.add("complete")
+                    console.log("i am settind id  ")
+                    complete_.dataset.id = `${id}`;
+                    console.log("i am done with setting id  ")
+                    cloned.appendChild(complete_) 
                     
                     // Add status badge
                     const statusBadge = document.createElement('span');
@@ -475,7 +493,9 @@
                     
                     // Show notification
                     showNotification('Service request accepted successfully!', 'success');
+                    complete();
                 });
+                complete();
             });
             
             let decline = document.getElementsByClassName("decline");
@@ -513,6 +533,8 @@
                     
                     // Show notification
                     showNotification('Service request declined', 'error');
+                    complete()
+
                 });
             });
         }

@@ -219,3 +219,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'vankoghv@gmail.com'
 EMAIL_HOST_PASSWORD = 'rqgubkawjaeyfflr'
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as the broker
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Where results are stored
