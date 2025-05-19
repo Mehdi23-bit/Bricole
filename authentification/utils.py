@@ -2,9 +2,26 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-def send_notification_to_user(user_id, message,demande_id, **extra_data):
-    print("heyhehe")
-    print(demande_id)
+def send_notification_to_user(user_id, message, **extra_data):
+     
+    """
+    Send a notification to a specific user by their ID
+    """
+    
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'notifications_{user_id}',
+        {
+            
+            'type': 'notification_message',
+            'message': message,
+            'data': extra_data
+        }
+    )
+
+def remaind_user(user_id,**extra_data):
+    print("ok bro you try  ur best but let's shufle the game an di will remaind you ")
+     
     """
     Send a notification to a specific user by their ID
     """
@@ -13,8 +30,8 @@ def send_notification_to_user(user_id, message,demande_id, **extra_data):
         f'notifications_{user_id}',
         {
             
-            'type': 'notification_message',
-            'message': message,
+            'type': 'remaind_comment',
+             
             'data': extra_data
         }
     )

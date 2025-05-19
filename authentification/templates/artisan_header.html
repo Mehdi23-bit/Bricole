@@ -1,6 +1,7 @@
 {% load static %} 
 <head>   
   <link rel="stylesheet" href="{% static 'authentification/css/header.css' %}"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     /* Only adding styles for notification dropdown effects */
     #notification {
@@ -52,6 +53,21 @@
       align-items: center;
       justify-content: center;
     }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); /* semi-transparent dark */
+      display: none; /* hidden by default */
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .checked {
+      color: orange;
+    }
   </style>
 </head>   
 <header>    
@@ -88,7 +104,7 @@
   {% endfor %}
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function() {
     // Toggle notification dropdown on click
     const notificationIcon = document.getElementById('notification');
     const notificationDropdown = document.getElementById('notification-drop-down');
@@ -107,13 +123,76 @@
         notificationDropdown.style.display = 'none';
       }
     });
-  });
+
+   
+      // Add these styles to your existing style section
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
+        .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 998;
+        }
+        
+        #harassment-popup {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: white;
+          border: 2px solid #d9534f;
+          padding: 25px;
+          z-index: 1001;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+          border-radius: 8px;
+          text-align: center;
+          font-family: sans-serif;
+          max-width: 400px;
+          width: 90%;
+        }
+        
+        #harassment-popup h2 {
+          color: #d9534f;
+          margin-top: 0;
+        }
+        
+        #harassment-popup p {
+          margin: 15px 0;
+          line-height: 1.5;
+        }
+        
+        #harassment-popup button {
+          background-color: #d9534f;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.2s;
+        }
+        
+        #harassment-popup button:hover {
+          background-color: #c9302c;
+        }
+      `;
+      document.head.appendChild(styleElement);
+    });
+ 
 
   const notificationSocket = new WebSocket(
     'ws://' + window.location.host + '/ws/notifications/'
   );
 
   notificationSocket.onmessage = function(e) {
+   
     playNotificationSound()
     if ("Notification" in window) {
       Notification.requestPermission().then(permission => {
@@ -131,8 +210,38 @@
     }
     
     const data = JSON.parse(e.data);
-    console.log(e)
-    
+    const type=data.data.type_notification
+    const id=data.data.demande_id
+    localStorage.setItem("id",id)
+    if (type == "harasse" && localStorage.getItem("mode")!="harasse") {
+      // Create overlay div
+      localStorage.setItem("mode", "harasse");
+      const overlayDiv = document.createElement("div");
+      overlayDiv.id = "notification-overlay";
+      overlayDiv.className = "overlay";
+      document.body.appendChild(overlayDiv);
+      
+      // Create popup content
+      const popup = document.createElement("div");
+      popup.id = "harassment-popup";
+      popup.innerHTML = `
+       <form id="comment"> 
+<span class="fa fa-star checked"></span>
+<span class="fa fa-star checked"></span>
+<span class="fa fa-star checked"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+       <textarea name='comment'></textarea>
+         <input type="submit">
+       </form>
+      
+      `;
+      
+      // Append popup to body
+      document.body.appendChild(popup);
+      commentform()
+    }
+    else if(type!="harasse" ){ 
     let noti=document.getElementById('notification')
     let noti_span=document.getElementById("noti_span")
     if (noti_span ==null){
@@ -157,6 +266,7 @@
       `
 
       markDone()
+  }
   };
 
   function playNotificationSound() {
@@ -194,4 +304,65 @@
   } 
   
   markDone();
+  // Add this function to close the harassment popup
+function closeHarassmentPopup() {
+  const popup = document.getElementById("harassment-popup");
+  const overlay = document.getElementById("notification-overlay");
+  
+  if (popup) {
+    popup.style.opacity = "0";
+    popup.style.transition = "opacity 0.3s ease";
+    setTimeout(() => popup.remove(), 300);
+  }
+  
+  if (overlay) {
+    overlay.style.opacity = "0";
+    overlay.style.transition = "opacity 0.3s ease";
+    setTimeout(() => overlay.remove(), 300);
+  }
+}
+
+// Make sure this function is accessible globally
+window.closeHarassmentPopup = closeHarassmentPopup;
+function commentform(){
+  document.getElementById("comment").addEventListener("submit",async function(e){
+e.preventDefault();
+const form=new FormData(e.target)
+console.log(form.get("comment"))
+const result=await fetch("{% url 'comment' %}",{
+
+  method:'POST',
+  headers:{
+      'X-CSRFToken': '{{ csrf_token }}'
+  },
+  body:JSON.stringify({ comment: form.get("comment"),id:localStorage.getItem("id"),rate:document.getElementById("comment").querySelectorAll(".fa.fa-star.checked").length }),
+
+})
+const data = await result.json()
+
+if(data.result=="success"){-
+  console.log(data.result)
+  localStorage.clear()
+  document.getElementById("harassment-popup").remove()
+}else if(data.result=="failled"){
+  console.log(data.result)
+  console.log("sorry please try again")
+}
+  })
+
+  stars=Array.from(document.getElementById("comment").querySelectorAll(".fa.fa-star"))
+  stars.forEach(star=>{
+    star.addEventListener("click",(e)=>{
+      
+      for(let i=0;i<stars.indexOf(star)+1;i++){
+        stars[i].classList.add("checked")
+      }  
+      for(let i=stars.indexOf(star)+1;i<stars.length;i++){
+        stars[i].classList.remove("checked")
+      }
+    })
+  })
+  
+
+}
 </script> 

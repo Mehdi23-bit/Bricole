@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     'Services',
     'demand',
     'channels',
-    
+    'django_celery_beat',
+    'comments',
        
 ]
 
@@ -116,9 +117,12 @@ TEMPLATES = [
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],  # Must match your R                                                                                                                                                                edis host for Celery
+        },
     },
-}
+}                                                                                      
 
 
 ASGI_APPLICATION = "Bricole.asgi.application"

@@ -31,4 +31,6 @@ urlpatterns = [
   path('dashboard/',views.dashboard,name='dashboard'),
   path('change_status/',views.change_status,name='change_status'),
   path('harasse/',views.harasse,name='harasse'),
+  path('comment/',views.comment,name='comment'),
+  
 ]

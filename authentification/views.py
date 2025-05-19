@@ -1,3 +1,5 @@
+from comments.models import Comments
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from .utils import send_notification_to_user 
 from django.contrib.auth import get_user_model
 from demand.models import Demande,Notification
@@ -414,12 +416,13 @@ def describe_service(request,id):
                             'categorie':x.categorie})
         artisan=service.artisan
         service_set=artisan.service_set.exclude(id=id)
+        comments=artisan.owner.all()
         print(service_set)
-        return render(request,'desc_service.html',{'service':service,'see_also':seealso,'more':service_set,'first':first,'form':form})
+        return render(request,'desc_service.html',{'service':service,'see_also':seealso,'more':service_set,'first':first,'form':form,'comments':comments,'rates':[1,2,3,4,5]})
 
 def ContactArtisan(request):
     if request.method=='POST':
-   
+       print(f"i am the user with the id : {request.user.id}")
     
        
        url=request.META.get('HTTP_REFERER').split('/')
@@ -449,7 +452,6 @@ def ContactArtisan(request):
          
          demande.save()
          
-         User = get_user_model()
          notification=Notification(owner=demande.artisan,is_read=False,demande=demande)
          notification.save()
          print(f'id is {artisan.id}') 
@@ -536,12 +538,28 @@ def change_status(request):
             )
         return JsonResponse({"message":"success"})
     elif request.method=='PUT':
-       
+        print("budweiser")
         id=json.loads(request.body).get('id')
            
         demande=Demande.objects.get(id=id)
         demande.status='finished'
         demande.save()
+        schedule, created = IntervalSchedule.objects.get_or_create(
+        every=30,
+        period=IntervalSchedule.SECONDS,
+    )
+    
+    # Create the periodic task
+        id_artisan=demande.artisan.id
+        id_client=demande.client.id
+        task = PeriodicTask.objects.create(
+        interval=schedule,
+        name=f'{id}/{id_artisan}/{id_client}',  # Must be unique
+        task='authentification.tasks.comment_notification',
+        kwargs=json.dumps({'id':id_client,"demande_id":id,'artisan_username':demande.artisan.username}),  # Add any task parameters here as JSON
+        expires=None,  # Optional: set expiration time
+    )
+        task.save()
         send_notification_to_user(
                 user_id=demande.client.id,
                 message=f'congrats your service has been done',
@@ -553,7 +571,46 @@ def change_status(request):
     else:
          return JsonResponse({"message":"error"})            
 
-from .tasks import send_email_to_user     
+from .tasks import send_email_to_user    
+import time  
 def harasse(request):
-    send_email_to_user.delay(3)
-    return HttpResponse("harasse")     
+        schedule, created = IntervalSchedule.objects.get_or_create(
+            every=25,
+            period=IntervalSchedule.SECONDS,
+        )
+    
+    # Create the periodic task
+        
+        task = PeriodicTask.objects.create(
+        interval=schedule,
+        name=f'slmcv{time.time}',  # Must be unique
+        task='authentification.tasks.send_email_to_user',
+        kwargs=json.dumps({}),  # Add any task parameters here as JSON
+        expires=None,  # Optional: set expiration time
+    )
+        task.save()
+   
+        return HttpResponse("harasse")     
+
+
+def comment(request):
+    if request.method=='POST':
+        try:
+            comment=json.loads(request.body).get("comment")
+            id=json.loads(request.body).get("id")
+            rate=json.loads(request.body).get("rate")
+            print(f"my rating is {rate}")
+            demande=Demande.objects.get(id=id)
+            id_artisan=demande.artisan.id
+            id_client=demande.client.id
+            print(comment,id)
+            PeriodicTask.objects.get(name=f'{id}/{id_artisan}/{id_client}').delete(
+
+            )
+            commentaire=Comments(comment=comment,owner=demande.artisan,commenter=demande.client,rating=rate)
+            commentaire.save()
+            return JsonResponse({"result":"success" })
+        except:
+            return JsonResponse({"result":"failled" })
+    else:
+        return JsonResponse({"result":"failled" })    

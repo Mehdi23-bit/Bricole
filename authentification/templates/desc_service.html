@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ service.title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         :root {
             --primary-color: #3498db;
@@ -274,6 +275,9 @@
                 padding: 20px;
             }
         }
+        .checked {
+            color: orange;
+          }
     </style>
 </head>
 <body>
@@ -330,6 +334,20 @@
 
 </form>   
 <input type='submit' id='submit'> 
+
+<div id="#comments">
+   {% for comment in comments %}
+   {% for nbr in rates %} 
+   
+   <span class="fa fa-star {% if nbr <= comment.rating %} checked{% endif %}"></span>
+   {%endfor%}
+   
+    <img src={{comment.commenter.photo.url }}>
+<p>{{ comment.comment }}</p>
+
+    {%endfor%}
+</div>
+
 <script>
   let submit=  document.getElementById('submit')
   submit.addEventListener('click', function(e) {
