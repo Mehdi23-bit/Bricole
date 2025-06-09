@@ -1,0 +1,1 @@
+data = requests.get(picture_url).content

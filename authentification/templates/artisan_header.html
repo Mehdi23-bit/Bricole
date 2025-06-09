@@ -68,10 +68,19 @@
     .checked {
       color: orange;
     }
+    
+
+ 
+  
+  
+  
   </style>
 </head>   
 <header>    
   <div class="header-div"> <span class="logo">Bricole</span> 
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Search...">
+  </div>
     <nav>    
       <a href="" class="hover">Home</a>    
       <div id="language">   
@@ -79,18 +88,24 @@
         <a href=""> English</a>     
       </div>   
       <a href="">Contact us</a>
-      <a href="" class="gradient-text">Become an Artisan</a>  
-      <a href="{% url 'sign_client' %}">Sign in</a>   
-      <a href="{% url 'signup' %}" id="join">Join</a> 
+ 
+    
       <div id='notification'>
-        <img src="{% static 'authentification/image/notification.png' %}" alt="notification" class="bell-icon">  
+        <img src="{% static 'authentification/image/notification.png' %}" alt="notification" class="bell-icon white-icon" >  
         {% if notis %}
         <span id='noti_span'>{{ notis_nbr }}</span>
         {% endif %}
       </div>
+      <div id="profile">
+        <img src="{{user.photo.url}}" alt="Profile">
+      </div>
     </nav> 
+    
   </div> 
+ 
 </header>
+
+<!-- Notification Dropdown -->
 <div id='notification-drop-down'>
   {% for notification in notis %}
   <div class="notification-item">
@@ -103,13 +118,62 @@
   </div>
   {% endfor %}
 </div>
+
+<!-- Profile Dropdown -->
+<div id="profile-dropdown">
+  <div class="profile-header">
+    <img src="{{user.photo.url}}" alt="Profile">
+    <h4>{{user.first_name}} {{user.last_name}}</h4>
+    <p>{{user.email}}</p>
+  </div>
+  <div class="profile-menu">
+    <a href="http://127.0.0.1:8000/profile" class="profile-item">
+      Profile
+    </a>
+    <a href="http://127.0.0.1:8000/post-project" class="profile-item">
+      Post a project brief
+    </a>
+    <a href="{% url 'dashboard' %}" class="profile-item">
+      Dashboard
+    </a>
+    <a href="http://127.0.0.1:8000/refer" class="profile-item">
+      Refer a friend
+    </a>
+    <div class="profile-divider"></div>
+    <a href="http://127.0.0.1:8000/become-seller" class="profile-item">
+      Become a Seller
+    </a>
+    <a href="http://127.0.0.1:8000/settings" class="profile-item">
+      Settings
+    </a>
+    <a href="http://127.0.0.1:8000/billing" class="profile-item">
+      Billing and payments
+    </a>
+    <div class="profile-divider"></div>
+    <a href="http://127.0.0.1:8000/help" class="profile-item">
+      Help & support
+    </a>
+    <a href="http://127.0.0.1:8000/logout" class="profile-item logout">
+      Logout
+    </a>
+  </div>
+</div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     // Toggle notification dropdown on click
     const notificationIcon = document.getElementById('notification');
     const notificationDropdown = document.getElementById('notification-drop-down');
     
-    notificationIcon.addEventListener('click', function() {
+    // Toggle profile dropdown on click
+    const profileIcon = document.getElementById('profile');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    
+    notificationIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Close profile dropdown if open
+      profileDropdown.style.display = 'none';
+      
       if (notificationDropdown.style.display === 'block') {
         notificationDropdown.style.display = 'none';
       } else {
@@ -117,10 +181,25 @@
       }
     });
     
-    // Close when clicking outside
+    profileIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Close notification dropdown if open
+      notificationDropdown.style.display = 'none';
+      
+      if (profileDropdown.style.display === 'block') {
+        profileDropdown.style.display = 'none';
+      } else {
+        profileDropdown.style.display = 'block';
+      }
+    });
+    
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
       if (!notificationIcon.contains(event.target) && !notificationDropdown.contains(event.target)) {
         notificationDropdown.style.display = 'none';
+      }
+      if (!profileIcon.contains(event.target) && !profileDropdown.contains(event.target)) {
+        profileDropdown.style.display = 'none';
       }
     });
 
@@ -365,4 +444,13 @@ if(data.result=="success"){-
   
 
 }
-</script> 
+
+document.addEventListener("DOMContentLoaded", (e) => {
+  document.getElementById('search').addEventListener('change', (e) => {
+      const value = e.target.value;
+      const url = new URL("http://127.0.0.1:8000/test/");
+      url.searchParams.append('key', value);
+      window.location.href = url.toString();
+  });
+});
+</script>

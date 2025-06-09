@@ -16,7 +16,7 @@ from  django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
 from .models import Users
 from .save_files import SaveFiles
-from Services.models import Service
+from Services.models import Service,Category
 from .tools import remove_gaps,extract_pictures 
 from django.http import HttpResponse
 from django import forms
@@ -116,7 +116,8 @@ def sign_in(request):
 def home_page(request):
      if request.user.is_authenticated:
          return redirect("home")
-     return render(request,"home_page.html")
+     form=LoginForm()
+     return render(request,"home_page.html",{'form':form})
 
 
 
@@ -153,6 +154,8 @@ def profile(request):
          description=request.POST['description']
          title=request.POST['title']
          category=request.POST['category']
+         print("my categorie is ",category)
+         category=Category.objects.get(id=category)
          user=Users.objects.get(id=request.user.id)
          files=request.FILES.getlist('files')
          photos=''
@@ -162,17 +165,18 @@ def profile(request):
                       
            SaveFiles().save(file,name,f"Service/{user.username}/{title}")
            photos+=f"Service/{user.username}/{title}/{name}*"
-          
+         first=photos.split("*")[0]  
+         print(photos) 
          user=request.user
          service=user.service_set.create(
-             description=description,title=title,photos=photos,categorie=category
+             description=description,title=title,photos=photos,categorie=category,first=first
          )
          print(service.artisan)
          service.save()
      services=[]      
      for category in Service.TYPES_ARTISAN:   
          services.append(category[0])
-     return render(request,'create_service.html',{'categories':services})
+     return JsonResponse({"status":"success"})
   else:
        return redirect("signin")
   
@@ -275,8 +279,7 @@ def modify(request):
                 'errors': form.errors
             })
     
-    # Handle all other cases - when neither of the above conditions are met
-    return HttpResponseRedirect(reverse('services_list'))  # Or redirect to an appropriate page
+    return HttpResponseRedirect(reverse('services_list'))  
         
 def service_detail(request):
     return render(request,'service_detail.html')        
@@ -295,13 +298,12 @@ def delete(request):
     else:
         return HttpResponse("<div>there is an error</div>")     
 
-# views.py
 
 
 @login_required
 def show_service(request):
     """View to render the initial services page"""
-    # Get first 9 services for initial page load
+    
     services = Service.objects.all()[:9]
     return render(request, 'show_service.html', {'services': services,'img':"http://127.0.0.1:8000/media/default.jpg"})
 
@@ -314,14 +316,14 @@ def load_services(request):
         data = json.loads(request.body)
         page = int(data.get('page', 1))
         
-        # Calculate offset and limit
-        offset = page * 9  # 9 items per page
+        
+        offset = page * 9 
         limit = offset + 9
         
-        # Get services for requested page
+        
         services = Service.objects.all()[offset:limit]
         
-        # Check if this is the last page
+       
         total_services = Service.objects.count()
         last_page = (offset + len(services)) >= total_services
         
@@ -383,19 +385,20 @@ def test(request):
             keys=keys.split()
             q_object=Q()
             for key in keys:
-                q_object |= Q(title__icontains=key) | Q(description__icontains=key)    | Q(categorie__icontains=key)  
+                q_object |= Q(title__icontains=key) | Q(description__icontains=key)    | Q(categorie__name__icontains=key)  
 
             result=Service.objects.filter(q_object)  
 
             # Create a paginator with 10 items per page
-            paginator = Paginator(result, 10)  # Show 10 objects per page
+            paginator = Paginator(result, 20)  # Show 10 objects per page
 
             # Get the current page number from the request (default to 1 if not specified)
             page_number = request.GET.get('page')
             page_obj = paginator.get_page(page_number)
+            print("the length of paginator is ",paginator.count)
             
 
-            return render(request, 'test.html', {'page_obj': page_obj,'keyword':key,'user':request.user})
+            return render(request, 'test.html', {'page_obj': page_obj,'keyword':key,'user':request.user,"length":paginator.count})
         else:
             return HttpResponse('<div>matb9ax t9lb f inspect</div>')
     else:
@@ -407,18 +410,21 @@ def describe_service(request,id):
         form=DemandeForm()
         service=Service.objects.get(pk=id)
         services=Service.objects.filter(categorie=service.categorie).exclude(id=id)
+        images=[service.photos.split('*')[i] for i in range(1,3)]
+        print("those are my images ",images)
+        
         first=services[:6]
         seealso=[]
         for x in services:
-            seealso.append({'photo':'http://127.0.0.1:8000/media/default.jpg'
+            seealso.append({'photo':x.first.url
                             ,'title':x.title,
                             'description':x.description,
-                            'categorie':x.categorie})
+                            'categorie':x.categorie.name})
         artisan=service.artisan
         service_set=artisan.service_set.exclude(id=id)
         comments=artisan.owner.all()
         print(service_set)
-        return render(request,'desc_service.html',{'service':service,'see_also':seealso,'more':service_set,'first':first,'form':form,'comments':comments,'rates':[1,2,3,4,5]})
+        return render(request,'desc_service.html',{'service':service,'images':images,'see_also':seealso,'more':service_set,'first':first,'form':form,'comments':comments,'rates':[1,2,3,4,5],'cities':Demande.cities})
 
 def ContactArtisan(request):
     if request.method=='POST':
@@ -435,6 +441,9 @@ def ContactArtisan(request):
          title=request.POST['titre']
          user=request.user
          files=request.FILES.getlist('photos')
+         price=request.POST['price']
+         city=request.POST['city']
+         datetime=request.POST['datetime']
          photos=''
          service=Service.objects.get(id=id)
          artisan=service.artisan
@@ -447,7 +456,7 @@ def ContactArtisan(request):
           
          
          demande=Demande(
-             description=description,titre=title,photos=photos,artisan=artisan,client=user,service=service
+             description=description,titre=title,photos=photos,artisan=artisan,client=user,service=service,price=price,city=city,date=datetime              
          )
          
          demande.save()
@@ -504,8 +513,9 @@ def dashboard(request):
     cur_demandes=pack_demandes(current_demandes)
     hist_demandes=pack_demandes(history_demandes)
     dec_demandes=pack_demandes(declined_demandes)
-    
-    return render(request,"dashboard.html",{"new_demandes":new_demandes,"cur_demandes":cur_demandes,"hist_demandes":hist_demandes,"dec_demandes":dec_demandes})     
+    categories=Category.objects.all()
+    services=request.user.service_set.all()
+    return render(request,"dashboard.html",{"new_demandes":new_demandes,"cur_demandes":cur_demandes,"hist_demandes":hist_demandes,"dec_demandes":dec_demandes,"user":request.user,"categories":categories,'services':services})     
    
 def change_status(request):
     print(request)
@@ -614,3 +624,13 @@ def comment(request):
             return JsonResponse({"result":"failled" })
     else:
         return JsonResponse({"result":"failled" })    
+
+@login_required
+def oauth_popup_close(request):
+    parent_origin = request.GET.get('parent_origin', 'http://127.0.0.1:8000')
+    
+    context = {
+        'user': request.user,
+        'parent_origin': parent_origin
+    }
+    return render(request, 'oauth_popup_close.html', context)

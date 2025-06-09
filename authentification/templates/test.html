@@ -1,277 +1,636 @@
-<style>
-  :root {
-    --primary-color: #3498db;
-    --primary-dark: #2980b9;
-    --text-color: #333;
-    --light-gray: #f5f7fa;
-    --border-radius: 10px;
-    --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    --transition: all 0.3s ease;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Directory</title>
+    <style>
+      :root {
+        --primary-black: #000000;
+        --primary-white: #ffffff;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+        --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-  body {
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    padding: 30px;
-    background-color: var(--light-gray);
-    color: var(--text-color);
-    line-height: 1.6;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-  .container {
-    width: 100%;
-    max-width: 1140px;
-    margin: 0 auto;
-  }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--primary-white);
+        color: var(--gray-900);
+        line-height: 1.5;
+        font-size: 16px;
+        min-height: 100vh;
+      }
 
-  .search-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-    position: relative;
-  }
+      .container {
+        max-width: 1576px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
 
-  #search {
-    padding: 15px 20px;
-    width: 100%;
-    max-width: 500px;
-    border: 2px solid #e1e5ea;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    transition: var(--transition);
-    box-shadow: var(--box-shadow);
-  }
+      /* Header Section */
+      .header {
+        text-align: center;
+        margin-bottom: 2rem; /* Adjusted from 3rem to make space for search */
+        padding: 2rem 0;
+        border-bottom: 2px solid var(--gray-100);
+      }
 
-  #search:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-  }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-black);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+      }
 
-  #search::placeholder {
-    color: #a0a0a0;
-  }
+      .header p {
+        font-size: 1.125rem;
+        color: var(--gray-600);
+        font-weight: 400;
+      }
 
-  .search-icon {
-    position: absolute;
-    right: calc(50% - 230px);
-    top: 50%;
-    transform: translateY(-50%);
-    color: #a0a0a0;
-    pointer-events: none;
-  }
+      /* Search Section - Simple Input Style */
+      .search-container {
+        text-align: center;
+        margin-bottom: 3rem; /* Original margin for separation */
+      }
 
-  .items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
-  }
+      .search-container input[type="text"] {
+        padding: 0.75rem 1rem;
+        width: 50%;
+        max-width: 500px;
+        border-radius: var(--border-radius-sm);
+        border: 2px solid var(--gray-300);
+        font-size: 1rem;
+        transition: border-color var(--transition);
+      }
 
-  .item {
-    background-color: white;
-    padding: 25px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    transition: var(--transition);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+      .search-container input[type="text"]:focus {
+        border-color: var(--primary-black);
+        outline: none;
+      }
+      
+      /* Items Grid */
+      .items {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Default to 5 columns */
+        gap: 1px;
+        margin-bottom: 3rem;
+      }
 
-  .item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  }
+      .item-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+      }
 
-  .item img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-  }
+      .item {
+        
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      
+      }
 
-  .item-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #2c3e50;
-  }
+      .item:hover {
+        
+      }
 
-  .item-category {
-    display: inline-block;
-    background-color: rgba(52,152,219,0.1);
-    color: var(--primary-color);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    margin-bottom: 15px;
-  }
+      .item img {
+        width: 100%;
+        height: 200px; /* Fixed height for consistency */
+        object-fit: cover; /* Ensures images cover the area well */
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 1.25rem;
+        border: 1px solid var(--gray-200);
+      }
 
-  .item-description {
-    color: #555;
-    flex-grow: 1;
-  }
+      .item-title {
+        font-size: 1.15rem; /* Slightly adjusted for better fit */
+        font-weight: 700;
+        color: var(--primary-black);
+        margin-bottom: 0.75rem;
+        line-height: 1.3; /* Adjusted line height */
+        height:50px;
+      }
+      
+      .item-artisan {
+        font-size: 0.9rem;
+        color: var(--gray-500);
+        margin-bottom: 0.75rem;
+      }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 50px;
-    font-size: 16px;
-  }
+      .item-category {
+        display: inline-block;
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+        padding: 0.375rem 0.875rem;
+        border-radius: 6px;
+        font-size: 0.8rem; /* Slightly smaller for aesthetics */
+        font-weight: 500;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
 
-  .pagination a {
-    padding: 12px 18px;
-    margin: 0 5px;
-    background-color: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    font-weight: 500;
-  }
+      .item-description {
+        color: var(--gray-600);
+        font-size: 0.9rem; /* Adjusted for balance */
+        line-height: 1.5;
+        flex-grow: 1;
+      }
 
-  .pagination a:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-  }
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--gray-100);
+      }
 
-  .pagination .current {
-    font-weight: bold;
-    padding: 12px 18px;
-    color: var(--text-color);
-  }
+      .pagination a, .pagination .current {
+        padding: 0.75rem 1.25rem;
+        text-decoration: none;
+        border-radius: var(--border-radius-sm);
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: var(--transition);
+        border: 2px solid transparent; /* Base border */
+      }
+      
+      .pagination a {
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+        border-color: var(--primary-black);
+      }
 
-  .empty-message {
-    text-align: center;
-    color: #777;
-    font-size: 18px;
-    font-style: italic;
-    padding: 40px 0;
-    grid-column: 1 / -1;
-  }
+      .pagination a:hover {
+        background-color: var(--primary-white);
+        color: var(--primary-black);
+        transform: translateY(-1px);
+      }
 
-  @media (max-width: 768px) {
-    .items {
-      grid-template-columns: 1fr;
+      .pagination .current {
+        font-weight: 600;
+        color: var(--gray-600);
+        background-color: var(--gray-100);
+        border-color: var(--gray-200);
+      }
+
+      /* Empty State */
+      .empty-message {
+        text-align: center;
+        color: var(--gray-500);
+        font-size: 1.125rem;
+        font-weight: 500;
+        padding: 4rem 2rem;
+        grid-column: 1 / -1; /* Span all columns */
+        background-color: var(--gray-50);
+        border: 2px dashed var(--gray-200);
+        border-radius: var(--border-radius);
+      }
+
+      /* Loading State */
+      #loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed; /* Make it overlay */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-black);
+        background-color: var(--primary-white);
+        z-index: 9999; /* Ensure it's on top */
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--gray-200);
+        border-top: 4px solid var(--primary-black);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 1rem;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) { /* Added breakpoint for better transition */
+        .items {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+        
+        .header h1 {
+          font-size: 2rem;
+        }
+        
+        .items {
+          grid-template-columns: repeat(2, 1fr); /* Two columns for tablets */
+          gap: 1.5rem;
+        }
+        
+        .pagination {
+          flex-wrap: wrap;
+          gap: 0.25rem;
+        }
+        
+        .pagination a,
+        .pagination .current {
+          padding: 0.5rem 0.875rem;
+          font-size: 0.85rem;
+        }
+      }
+
+      @media (max-width: 576px) { /* Adjusted breakpoint for single column */
+         .items {
+          grid-template-columns: 1fr; /* Single column for smaller mobile */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header {
+          padding: 1rem 0;
+        }
+        
+        .header h1 {
+          font-size: 1.75rem;
+        }
+        
+        .search-container input[type="text"] {
+            width: 80%;
+        }
+        
+        .item {
+          padding: 1.25rem;
+        }
+        .item-title {
+            font-size: 1.1rem;
+        }
+      }
+      .result{
+        color:#222325;
+        font-weight:400;
+        font-size: 28px;
+      }
+      .length{
+        text-decoration: none;
+        cursor: pointer;
+        color: #62646A;
+        font: 400 16px/24px Macan, Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-weight: 500; /* Using 500 for a bit more emphasis than 400 */
+        white-space: nowrap;
+        
+      }
+      img.profile{
+        width:35px;
+        height:35px;
+        border-radius:100%;
+      }
+     div.user-profile{
+   display:flex;
+   width:120px;
+   justify-content:space-between;
+   flex-direction:row;
+   align-items: center; 
+
+     }
+     .star {
+      color: black;
+      font-size: 20px;
     }
-    body {
-      padding: 20px 15px;
+    .suggest-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem; /* Space between "Suggested" and items */
+      margin-bottom: 1.5rem; /* Space below suggestions */
+      flex-wrap: wrap; /* Allow suggestions to wrap on smaller screens */
     }
-    .search-icon {
-      right: 25px;
+
+    .suggest-bar .suggest-title {
+      font-weight: 500;
+      color: var(--gray-700);
+      font-size: 0.9rem;
     }
-  }
-  #loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #555;
-  }
-</style>
-<div id="loading">loading.....</div>
 
-<div id="main" style='display:none;'>
-  {% if user.role == "artisan" %}
+    .suggest-bar .suggest-item {
+      padding: 0.35rem 0.85rem;
+      background-color: transparent;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-600);
+      border-radius: 16px; /* Pill shape */
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
 
-  {% include "artisan_header.html" %}
- 
-  {% else %}
- 
-  {% include "header.html" %}
-  {% endif %}
-<div class="container">
-  <div class="search-container">
-    <input type='text' id='search' placeholder='Search for anything...'>
-    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
+    .suggest-bar .suggest-item:hover {
+      background-color: var(--gray-100);
+      border-color: var(--gray-400);
+      color: var(--gray-800);
+    }
+    #suggestions{
+      background-color: #f5f5f5;  
+      display:flex;
+      justify-content:center;  
+    }
+    #suggestions nav{
+      dispaly:flex;
+      justify-content:space-around;
+      width:90%;
+    }
+    #suggestions nav a{
+    
+      color: rgba(98,100,106,.4);
+      border:1px solid black;
+      padding:8px;
+      background-color:white;
+    }
+    #suggestions nav p{
+      color: #62646a;
+      font-size:20px;
+
+    }
+    .dropbtn {
+      background-color: white;
+      color: black;
+      font-weight:bold;
+      border:1px solid black;
+      border-radius:5px;
+      padding-left: 30px;
+      padding-right: 30px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top:20px;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+    }
+    
+    /* Dropdown button on hover & focus */
+    .dropbtn:hover, .dropbtn:focus {
+      background-color: #f5f5f5;
+    }
+    
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+    
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {background-color: #ddd;}
+    
+    /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+    .show {display:block;}
+.sort{
+  width:550px;
+  display:flex;
+  justify-content:space-between;
+
+
+}
+
+.dropbtn img{
+  
+  width:20px
+}
+    </style>
+</head>
+<body>
+
+  <div id="loading">
+    <div class="loading-spinner"></div>
+    Loading..
   </div>
-
-  <div class="items">
-    {% for item in page_obj %}
-    <a href="{% url 'ds' id=item.id %}">
-      <div class="item">
-       
-        <img src='http://127.0.0.1:8000/media/default.jpg' alt='{{ item.title }}'>
-        <p class="item-title">{{ item.title }}</p>
-        <p class="item-category">{{ item.categorie }}</p>
-        <p class="item-description">{{ item.description }}</p>
+  {% include 'artisan_header.html' %}
+  <header id='suggestions'>
+    <nav>
+    <p>Suggested</p>
+    
+    <a href="#">Assembling furniture</a>
+    <a href="#">Painting walls</a>
+    <a href="#">Fixing leaky</a>
+    <a href="#">Gutter cleaning</a>
+    <a href="#">Replacing broken tiles</a>
+    <a href="#">Installing blinds</a>
+    <a href="#">Installing showerheads</a>
+    <a href="#">Home appliance</a>
+    <a href="#">Repairing drywall</a>
+    <a href="#">Installing blinds </a>
+    
+  </nav>
+  </header>
+  <div id="main" style='display:none;'>
+    <div class="container">
+      <div class="search-section">
+        
+      
       </div>
-    </a>
-    {% empty %}
-      <p class="empty-message">No results found. Try a different search term.</p>
-    {% endfor %}
+    {% load static %}
+      <br> 
+      <h1 class='result'>Results for <b>{{ keyword }}</b></h1>
+      <div class="sort">
+      <button onclick="myFunction()" class="dropbtn">Category <img src={% static 'authentification/image/down.png' %}></button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
   </div>
+  <button onclick="myFunction()" class="dropbtn">Date <img src={% static 'authentification/image/down.png' %}></button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+  <button onclick="myFunction()" class="dropbtn">Rating <img src={% static 'authentification/image/down.png' %}></button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+  <button onclick="myFunction()" class="dropbtn">City <img src={% static 'authentification/image/down.png' %}></button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+</div>
+<br>
 
-  {% if page_obj %}
-    <div class="pagination">
-      <span class="step-links">
-          {% if page_obj.has_previous %}
-              <a href="?page=1&key={{ keyword }}" title="First page">&laquo; First</a>
-              <a href="?page={{ page_obj.previous_page_number }}&key={{ keyword }}" title="Previous page">Previous</a>
-          {% endif %}
-          <span class="current">
-              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-          </span>
-          {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number }}&key={{ keyword }}" title="Next page">Next</a>
-              <a href="?page={{ page_obj.paginator.num_pages }}&key={{ keyword }}" title="Last page">Last &raquo;</a>
-          {% endif %}
-      </span>
-    </div>
-  {% endif %}
-</div>
-</div>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById('search');
-    
-    // Set input value from URL if exists
-    const urlParams = new URLSearchParams(window.location.search);
-    const keywordParam = urlParams.get('key');
-    if (keywordParam) {
-      searchInput.value = keywordParam;
-    }
-    
-    // Handle search input changes
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        performSearch();
+<br>
+<p class="length">{{length}}+ result</p>
+<div class="items">
+      {% for service in page_obj %}
+
+        <a href="{% url 'ds' service.id %}" class="item-link">
+          <div class="item">
+            <img src='{{ service.first.url }}' alt='UI UX Design Service Example 3'>
+            <h3 class="item-title">{{ service.title }}</h3>
+           <div class="user-profile"> <img src="{{ service.artisan.photo.url }}" class="profile">
+            <span class="item-artisan">{{ service.artisan.username }}</span> </div>
+            
+            <p><span class="star">&#9733;</span> {{service.rate}} ({{ service.comments_set.all|length }}) </p>
+            
+          </div>
+          
+        </a>
+        {% endfor %}
+       
+        
+      </div>
+
+      <div class="pagination">
+          <a href="?page=1&key={{keyword}}" title="Previous page">Previous</a>
+          <span class="current">Page 1 of 3</span>
+          <a href="?page=2&key={{keyword}}" title="Next page">Next</a>
+      </div>
+      
+      </div>
+  </div>
+  {% include 'footer.html' %}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const searchInput = document.getElementById('search');
+      
+      if (searchInput) { // Check if searchInput exists
+        const urlParams = new URLSearchParams(window.location.search);
+        const keywordParam = urlParams.get('key');
+        if (keywordParam) {
+          searchInput.value = keywordParam;
+        }
+        
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            performSearch();
+          }
+        });
+
+        // Optional: Trigger search on input change (can be too aggressive)
+        // searchInput.addEventListener('change', () => {
+        //   performSearch();
+        // });
+        
+        function performSearch() {
+          const value = searchInput.value.trim();
+          // You would typically redirect or fetch data here
+          // For this static example, we'll just log it
+          console.log("Performing search for:", value);
+          if (value) {
+            // Example of URL construction if you were to implement it:
+            // const currentUrl = new URL(window.location.href);
+            // currentUrl.searchParams.set('key', value);
+            // currentUrl.searchParams.set('page', '1'); // Reset to first page on new search
+            // window.location.href = currentUrl.toString();
+            alert("Search functionality would redirect/filter for: " + value);
+          } else {
+            // If search is cleared, you might want to remove the key parameter
+            // const currentUrl = new URL(window.location.href);
+            // currentUrl.searchParams.delete('key');
+            // window.location.href = currentUrl.toString();
+            alert("Search field is empty.");
+          }
+        }
+      } else {
+        console.warn("Search input with ID 'search' not found.");
       }
     });
 
-    searchInput.addEventListener('change', () => {
-      performSearch();
+    // Simulate content loading
+    const promise = new Promise(function(resolve, reject) {
+      // Simulate a network request or content loading time
+      setTimeout(() => {
+          resolve("done");
+      }, 1000); // Reduced timeout for quicker display
     });
+
+    promise.then(function(resolve) {
+      const loadingDiv = document.getElementById("loading");
+      const mainDiv = document.getElementById("main");
+      if (loadingDiv) loadingDiv.style.display = "none";
+      if (mainDiv) mainDiv.style.display = "block";
+    });
+
     
-    function performSearch() {
-      const value = searchInput.value.trim();
-      if (value) {
-        const url = new URL("http://127.0.0.1:8000/test/");
-        url.searchParams.append('key', value);
-        window.location.href = url.toString();
-      }
+    
+    function myFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
     }
-  });
-
-  const promise = new Promise(function(resolve, reject) {
-    setTimeout(() => {
-        resolve("done");
-    }, 4000);
-});
-
-promise.then(function(resolve) {
     
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("main").style.display = "block";
-});
-</script>
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    } 
+  </script>
+
+</body>
+</html>

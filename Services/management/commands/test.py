@@ -1,9 +1,9 @@
 from faker import Faker
 import random
-from Services.models import Service
+from Services.models import Service,Category
 from authentification.models import Users
 
-
+from comments.models import Comments
 
 
 from django.core.management.base import BaseCommand
@@ -43,19 +43,36 @@ class Command(BaseCommand):
         ('nettoyeur', 'Nettoyeur'),
         ('electricien_auto', 'Électricien auto'),
     ]
-    def handle(self, *args, **kwargs):
-        for i in range(200,400):
-            username = f"artisan{i}"
-            user, _ = Users.objects.get_or_create(username=username, defaults={"password": "test12345"})
 
-        # Assign 3 services to each artisan
-            for _ in range(3):
-                Service.objects.create(
-                artisan=user,
-                title=fake.sentence(),
-                categorie=random.choice(self.categories)[0],
-                description=fake.paragraph(),
-                photos="/default.jpg"  
-            )
+    def rand(self):
+        i=0
+        numbers=[]
+        last=-1
+        while i<3: 
+            
+            while True:
+                 id=random.randint(0, 79)
+                 if id!=last:
+                     last=id
+                     numbers.append(id)
+                     break
+            i=i+1;                
+        return  numbers         
+
+    def handle(self, *args, **kwargs):
+        services=Service.objects.all()
+        
+        for service in services:
+            comments=Comments.objects.filter(service=service)
+            print(comments)
+            i=0
+            rate=0
+            for comment in comments:
+                i+=1
+                rate+=comment.rating
+            service.rate=int(rate/i)
+            service.save()
         self.stdout.write(self.style.SUCCESS("Successfully added fake data."))
+
+
 

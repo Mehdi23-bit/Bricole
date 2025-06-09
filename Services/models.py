@@ -1,6 +1,13 @@
 from django.db import models
 from authentification.models import Users
 
+
+class Category(models.Model):
+    name=models.CharField(max_length=255,null=True)    
+    photo=models.ImageField()    
+    class Meta:
+        db_table='categories'
+
 class Service(models.Model):
     
 
@@ -37,8 +44,11 @@ class Service(models.Model):
     title=models.CharField(max_length=255,null=True)
     description=models.TextField(null=False)
     photos=models.TextField()
-    categorie=models.CharField(max_length=30,choices=TYPES_ARTISAN)
+    first=models.ImageField(null=True)
+    categorie=models.ForeignKey(Category,on_delete=models.CASCADE)
     Note=models.FloatField(default=0)
     artisan=models.ForeignKey(Users,on_delete=models.CASCADE)
+    rate=models.IntegerField(null=True)
     class Meta:
         db_table='services' 
+

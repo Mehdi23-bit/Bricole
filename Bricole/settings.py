@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
     'allauth.account',
     'Services',
     'demand',
@@ -80,7 +81,33 @@ SOCIALACCOUNT_PROVIDERS={
         "SCOOP":[
 "profile","email"
         ],
-        "AUTH_PARAMS":{"access_type":"online"}
+        "AUTH_PARAMS":{"access_type":"online"},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+    , 'facebook': {
+        'APP': {
+            'client_id':'1095734329241864',
+            'secret': '98ffaffa0ed3175f474ce83410b37bee'
+        },
+        'METHOD': 'oauth2',  # Set to 'js_sdk' to use the Facebook connect SDK
+        'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
+        'SCOPE': ['email', 'public_profile'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'name',
+            'name_format',
+            'picture',
+            'short_name',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v17.0',
+        'GRAPH_API_URL': 'https://graph.facebook.com/v17.0',
     }
 }
 
@@ -96,6 +123,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'Bricole.middleware.block_allauth.BlockAllauthViewsMiddleware',
+    'authentification.middleware.CrossOriginOpenerPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'Bricole.urls'
@@ -191,7 +219,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL='authentification.Users'    
-LOGIN_REDIRECT_URL = 'home'  
+
 LOGOUT_REDIRECT_URL = 'signin'
 
 
@@ -204,6 +232,12 @@ AUTHENTICATION_BACKENDS=(
 
 SOCIALACCOUNT_LOGIN_ON_GET = True   
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+LOGIN_REDIRECT_URL = "/oauth-popup-close/"
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+ACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+
 
 
 #Media Root the path to get  files uploaded by users
@@ -212,7 +246,7 @@ MEDIA_ROOT='/home/elmehdi/Desktop/media'
 
 MEDIA_URL='media/'
 
-
+SOCIALACCOUNT_ADAPTER = 'authentification.adapter.CustomedAdapter'
 
 
 #Email settings

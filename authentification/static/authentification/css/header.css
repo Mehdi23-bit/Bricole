@@ -1,105 +1,270 @@
-*{
-    margin:0;
-    padding: 0;
-}
-header{
-   background-color: white;
-    display:flex;
-    width: 1854px;
-    height: 80px;
-    justify-content: center;
-    align-items: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Recommended for easier layout management */
 }
 
-header nav{
-    display: flex;         /* Makes children (the links) align horizontally */
-  justify-content: space-between; /* Optional: spreads them out */
+header {
+  background-color: black;
+  display: flex;
+  width: 100%; /* Make header responsive */
+  height: 80px;
+  justify-content: center; /* Center .header-div if it's narrower */
   align-items: center;
-  width:800px;
-}
-.header-div{
-    width: 1400px;
-    height:80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-nav a{
-    text-decoration: none;
-    
-    color:#62646A;
-    font:400 18px/24px Macan,Helvetica Neue,Helvetica,Arial,sans-serif;
-    font-weight:bold;
+  border-bottom: 1px solid #e0e0e0; /* Softer border */
+  position: sticky; /* Optional: if you want a sticky header */
+  top: 0;
+  z-index: 1001; /* Ensure header is above notification overlay and popups */
 }
 
-
-
-#language{
-width: 90px; 
-height: 27px;  
-display: flex;
-align-items: center;
-justify-content:space-between
-
+.header-div {
+  width: 100%;
+  max-width: 1400px; /* Max content width, adjust as needed */
+  height: 100%; /* Take full height of header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px; /* Add some padding on the sides */
 }
 
-#language img{
-width:14px;
-height:14px;
+.logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem; /* Adjusted size slightly for balance */
+  font-weight: 700;
+  color: white;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  user-select: none;
+  white-space: nowrap; /* Prevent logo text from wrapping */
+  margin-right: 20px; /* Add some space after the logo */
 }
 
-.logo{
-    font-family: 'Poppins', sans-serif; /* clean & modern font */
-    font-size: 2rem;
-    font-weight: 700;
-    color: Black;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    user-select: none;
+/* .search-container is styled inline with width: 300px in your HTML <style> block. */
+/* We can add some flex behavior here if needed, but margin is key. */
+.header-div .search-container {
+  /* width: 300px; -- This is set inline and is fine */
+  margin: 0 15px; /* Add horizontal margin to give it space */
+  flex-shrink: 1; /* Allow it to shrink if space is very tight */
+  min-width: 150px; /* Prevent it from becoming too small */
 }
 
-.gradient-text {
-    background: linear-gradient(270deg, #ff6a00, #ee0979, #00c9ff, #ff6a00);
-    background-size: 800% 800%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientMove 8s ease infinite;
-  }
+header nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around; /* This is for items *inside* nav. Use gap or margins on children instead for better control. */
+  width: 50%; /* REMOVE THIS LINE - THIS IS THE MAIN CAUSE OF THE PROBLEM */
+}
 
-  @keyframes gradientMove {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
+/* Style direct children of nav for spacing */
+header nav > * { /* Targets a, div#language, div#notification, div#profile etc. */
+  margin-left: 18px; /* Adjust spacing between navigation items */
+  display: flex; /* Helps align items if they are containers themselves */
+  align-items: center;
+}
+header nav > *:first-child {
+  margin-left: 0; /* No margin for the first item in nav */
+}
 
-#join{
+header nav a, header nav p { /* Base styling for text links/paragraphs in nav */
+  text-decoration: none;
+  cursor: pointer;
+  color: white;
+  font: 400 16px/24px Macan, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-weight: 500; /* Using 500 for a bit more emphasis than 400 */
+  white-space: nowrap;
+}
+header nav a:hover {
+  color:#62646A; /* Example hover color */
+}
+
+
+#language {
+  /* width, height are fine from your original CSS if needed, but often not necessary */
+  /* margin-left is handled by header nav > * */
+}
+
+#language img {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px; /* Space between globe and text */
+}
+#language a {
+  margin-left: 0; /* Reset if it inherited from nav > a */
+}
+
+
+#join { /* Example styling if you have a "Join" button/link */
   border-radius: 5px;
-  border:2px solid white;
-  padding: 9px 25px  ;
-}  
-
+  border: 1px solid black;
+  padding: 8px 16px;
+  color: black;
+  font-weight: 500; /* Match other nav items or make bolder if it's a CTA */
+}
+#join:hover {
+  background-color: #f0f0f0;
+}
 
 
 .bell-icon {
   width: 24px;
   height: 24px;
   object-fit: contain;
-  margin-left: 10px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  filter: brightness(0) invert(1);
 }
 
 .bell-icon:hover {
   transform: scale(1.1);
 }
 
-#noti_span{
-  
+/* Profile image styling is mostly in your inline <style> block. */
+/* margin-left for #profile div is handled by header nav > * */
+
+
+/* Gradient text for logo - this can remain as is if you like the effect */
+.gradient-text {
+  background: linear-gradient(270deg, #ff6a00, #ee0979, #00c9ff, #ff6a00);
+  background-size: 800% 800%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 8s ease infinite;
 }
+
+#search {
+  width: 120%;
+  padding: 10px 15px;
+  border: 2px solid  black ;
+  border-radius: 25px;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#search:focus {
+  background-color: white;
+ 
+}
+.search-container{
+width:300px;
+}
+
+
+#profile {
+  position: relative;
+  cursor: pointer;
+}
+
+#profile img {
+  border-radius: 50%;
+  border:2px solid white;
+  width:40px;
+  height:40px;
+  transition: opacity 0.2s ease;
+}
+
+#profile img:hover {
+  opacity: 0.8;
+}
+
+/* Profile dropdown styles */
+#profile-dropdown {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 240px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  border: 1px solid #e4e5e7;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.profile-header {
+  padding: 20px 16px 16px 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e5e7;
+}
+
+.profile-header img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  margin-bottom: 8px; 
+}
+
+.profile-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #404145;
+  line-height: 1.4;
+}
+
+.profile-header p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #74767e;
+  line-height: 1.4;
+}
+
+.profile-menu {
+  padding: 8px 0;
+}
+
+.profile-item {
+  display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #404145;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  transition: background-color 0.15s ease;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-item:hover {
+  background-color: #f5f5f5;
+  color: #404145;
+}
+
+.profile-item i {
+  display: none;
+}
+
+.profile-item.logout {
+  color: #404145;
+  border-top: 1px solid #e4e5e7;
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.profile-item.logout:hover {
+  background-color: #f5f5f5;
+  color: #404145;
+}
+
+.profile-divider {
+  height: 1px;
+  background-color: #e4e5e7;
+  margin: 8px 0;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+

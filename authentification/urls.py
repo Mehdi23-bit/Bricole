@@ -32,5 +32,7 @@ urlpatterns = [
   path('change_status/',views.change_status,name='change_status'),
   path('harasse/',views.harasse,name='harasse'),
   path('comment/',views.comment,name='comment'),
+  path('oauth-popup-close/',views.oauth_popup_close,name='oauth-popup-close'),
+  
   
 ]
