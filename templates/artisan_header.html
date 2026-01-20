@@ -1,0 +1,490 @@
+{% load static %} 
+<head>   
+  <link rel="stylesheet" href="{% static 'accounts/css/header.css' %}"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    /* Header container to manage stacking context */
+    header .header-div {
+      /* Assuming your header is positioned. If it's fixed, this might be in header.css */
+      /* For this example, let's ensure it has a z-index lower than the dropdowns */
+      position: relative; 
+      z-index: 1000;
+    }
+
+    /* Wrapper for icons to position dropdowns correctly */
+    .nav-icon-wrapper {
+      position: relative;
+    }
+    
+    /* --- Dropdown Styles --- */
+    #notification-drop-down, #profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px; /* Adjust this value based on your header's height */
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      z-index: 1050; /* High z-index to ensure it's on top of the header */
+      border: 1px solid #e0e0e0;
+    }
+    
+    #notification-drop-down {
+      width: 320px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    #profile-dropdown {
+      width: 250px;
+    }
+
+    /* Notification specific styles */
+    #notification {
+      cursor: pointer;
+    }
+    #noti_span {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .notification-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    .notification-item a {
+      text-decoration: none;
+      color: #333;
+    }
+    .mark_as_done {
+      cursor: pointer;
+      color: blue;
+      font-size: 12px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
+    /* Profile Dropdown specific styles */
+    #profile {
+      cursor: pointer;
+    }
+    #profile img {
+      width: 40px; /* Example size */
+      height: 40px;
+      border-radius: 50%;
+    }
+    .profile-header {
+      padding: 16px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    .profile-header img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+    }
+    .profile-header h4, .profile-header p {
+      margin: 0;
+      color: #333;
+    }
+    .profile-header p {
+        font-size: 14px;
+        color: #777;
+    }
+    .profile-menu .profile-item {
+      display: block;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: #333;
+      font-size: 15px;
+    }
+    .profile-menu .profile-item:hover {
+      background-color: #f5f5f5;
+    }
+    .profile-divider {
+      height: 1px;
+      background-color: #eee;
+      margin: 8px 0;
+    }
+    .profile-item.logout {
+      color: #d9534f;
+      font-weight: bold;
+    }
+
+    /* --- Overlay and Popup Styles --- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex; /* Changed from none to flex for easier toggling */
+      justify-content: center;
+      align-items: center;
+      z-index: 1100; /* Must be below the popup but above everything else */
+    }
+    
+    #harassment-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 25px;
+      z-index: 1101; /* Highest z-index */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      width: 90%;
+      max-width: 450px;
+    }
+    
+    .review-container h2 {
+        margin: 0 0 20px 0;
+        font-size: 24px;
+        color: #333;
+        text-align: center;
+    }
+    .star-rating {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .star-rating .fa-star {
+        font-size: 32px;
+        color: #ccc;
+        cursor: pointer;
+        margin: 0 4px;
+    }
+    .star-rating .fa-star.checked {
+        color: #ffc107;
+    }
+    #comment textarea {
+        width: 100%;
+        height: 120px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        box-sizing: border-box; 
+        font-size: 16px;
+        resize: vertical;
+    }
+    #comment input[type="submit"] {
+        width: 100%;
+        padding: 15px;
+        background-color: #2c3e50;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    #comment input[type="submit"]:hover {
+        background-color: #34495e;
+    }
+  </style>
+</head>   
+<body>
+  <header>    
+    <div class="header-div"> 
+      <span class="logo">Bricole</span> 
+      <div class="search-container">
+        <input type="text" id="search" placeholder="Search...">
+      </div>
+      <nav>    
+        <a href="" class="hover">Home</a>    
+        <div id="language">   
+          <img src="{% static 'accounts/image/globe.png' %}" alt="globe">     
+          <a href=""> English</a>     
+        </div>   
+        <a href="">Contact us</a>
+  
+        <div class="nav-icon-wrapper">
+          <div id='notification'>
+            <img src="{% static 'accounts/image/notification.png' %}" alt="notification" class="bell-icon white-icon">  
+            {% if notis %}
+            <span id='noti_span'>{{ notis_nbr }}</span>
+            {% endif %}
+          </div>
+           <div id='notification-drop-down'>
+            {% if notis %}
+              {% for notification in notis %}
+              <div class="notification-item">
+                <a href='http://127.0.0.1:8000/dashboard'>
+                  <strong>{{notification.demande.titre}}</strong><br>
+                  {{notification.demande.description}}<br>
+                  <small class="text-muted">2 mins ago</small>
+                </a>
+                <span class='mark_as_done' data-id='{{ notification.id }}'>mark as seen</span>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="notification-item">No new notifications.</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="nav-icon-wrapper">
+          <div id="profile">
+            <img src="{{user.avatar.url}}" alt="Profile">
+          </div>
+           <div id="profile-dropdown">
+            <div class="profile-header">
+              <img src="{{user.avatar.url}}" alt="Profile">
+              <h4>{{user.first_name}} {{user.last_name}}</h4>
+              <p>{{user.email}}</p>
+            </div>
+            <div class="profile-menu">
+              <a href="http://1227.0.0.1:8000/profile" class="profile-item">Profile</a>
+              <a href="http://127.0.0.1:8000/post-project" class="profile-item">Post a project brief</a>
+              <a href="{% url 'dashboard' %}" class="profile-item">Dashboard</a>
+              <a href="http://127.0.0.1:8000/refer" class="profile-item">Refer a friend</a>
+              <div class="profile-divider"></div>
+              <a href="http://127.0.0.1:8000/become-seller" class="profile-item">Become a Seller</a>
+              <a href="http://127.0.0.1:8000/settings" class="profile-item">Settings</a>
+              <a href="http://127.0.0.1:8000/billing" class="profile-item">Billing and payments</a>
+              <div class="profile-divider"></div>
+              <a href="http://127.0.0.1:8000/help" class="profile-item">Help & support</a>
+              <a href="http://127.0.0.1:8000/logout" class="profile-item logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </nav> 
+    </div> 
+  </header>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // --- Dropdown Toggle Logic ---
+  const notificationIcon = document.getElementById('notification');
+  const notificationDropdown = document.getElementById('notification-drop-down');
+  const profileIcon = document.getElementById('profile');
+  const profileDropdown = document.getElementById('profile-dropdown');
+
+  notificationIcon.addEventListener('click', function(e) {
+    e.stopPropagation();
+    profileDropdown.style.display = 'none'; // Close other dropdown
+    notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+  });
+
+  profileIcon.addEventListener('click', function(e) {
+    e.stopPropagation();
+    notificationDropdown.style.display = 'none'; // Close other dropdown
+    profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // Close dropdowns when clicking anywhere else on the page
+  document.addEventListener('click', function(event) {
+    if (!notificationIcon.contains(event.target) && !notificationDropdown.contains(event.target)) {
+      notificationDropdown.style.display = 'none';
+    }
+    if (!profileIcon.contains(event.target) && !profileDropdown.contains(event.target)) {
+      profileDropdown.style.display = 'none';
+    }
+  });
+  
+  // --- Search Logic ---
+  document.getElementById('search').addEventListener('change', (e) => {
+      const value = e.target.value;
+      const url = new URL("http://127.0.0.1:8000/test/");
+      url.searchParams.append('key', value);
+      window.location.href = url.toString();
+  });
+
+  // Initial call for existing notifications
+  markDone();
+});
+
+
+// --- WebSocket and Notification Logic ---
+const notificationSocket = new WebSocket(
+  'ws://' + window.location.host + '/ws/notifications/'
+);
+
+notificationSocket.onmessage = function(e) {
+  playNotificationSound();
+  
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        new Notification("🔔 You have a new notification!", {
+          body: "Click to see the details.",
+          icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+        });
+      }
+    });
+  }
+  
+  const data = JSON.parse(e.data);
+  const type = data.data.type_notification;
+  const id = data.data.demande_id;
+  localStorage.setItem("id", id);
+  
+  if (type === "harasse" && localStorage.getItem("mode") !== "harasse") {
+    localStorage.setItem("mode", "harasse");
+    showHarassmentPopup();
+  } else if (type !== "harasse") { 
+    updateNotificationUI(data);
+  }
+};
+
+function playNotificationSound() {
+  const audio = new Audio("{% static 'accounts/audio/notification.mp3' %}");
+  audio.play().catch(error => console.error("Audio playback failed:", error));
+}
+
+function updateNotificationUI(data) {
+  let noti_span = document.getElementById("noti_span");
+  if (noti_span == null) {
+    const span = document.createElement("span");
+    span.id = 'noti_span';
+    span.textContent = '1';
+    document.getElementById('notification').appendChild(span);
+  } else {
+    noti_span.textContent = parseInt(noti_span.textContent) + 1;
+  }
+  
+  const dropdown = document.getElementById("notification-drop-down");
+  const newNotificationHTML = `
+    <div class="notification-item">
+      <a href='http://127.0.0.1:8000/dashboard'>
+        <strong>${data.data.title}</strong><br>
+        ${data.notification}<br>
+        <small class="text-muted">Just now</small>
+      </a>
+      <span class='mark_as_done' data-id='${data.data.noti_id}'>mark as seen</span>
+    </div>`;
+  dropdown.insertAdjacentHTML('afterbegin', newNotificationHTML); // Add to top
+  markDone(); // Re-attach listeners
+}
+
+async function markDone() {
+  document.querySelectorAll('span.mark_as_done').forEach(element => {
+    // To prevent adding multiple listeners, we replace the element with a clone
+    const newElement = element.cloneNode(true);
+    element.parentNode.replaceChild(newElement, element);
+
+    newElement.addEventListener("click", async function(e) {
+      const id = e.target.dataset.id;
+      try {
+        const response = await fetch('{% url "mark_as_done" %}', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: id }),
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+          e.target.closest('.notification-item').remove();
+          let noti_span = document.getElementById("noti_span");
+          if (noti_span) {
+            let count = parseInt(noti_span.textContent) - 1;
+            if (count > 0) {
+              noti_span.textContent = count;
+            } else {
+              noti_span.remove();
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to mark notification as done:", error);
+      }
+    });
+  });
+}
+
+// --- Harassment Popup and Comment Logic ---
+function showHarassmentPopup() {
+    const overlay = document.createElement("div");
+    overlay.id = "notification-overlay";
+    overlay.className = "overlay";
+    
+    const popup = document.createElement("div");
+    popup.id = "harassment-popup";
+    popup.innerHTML = `
+      <div class="review-container">
+        <h2>Leave your review</h2>
+        <form id="comment">
+            <div class="star-rating">
+                ${[...Array(5)].map((_, i) => `<span class="fa fa-star" data-value="${i+1}"></span>`).join('')}
+            </div>
+            <textarea name='comment' placeholder="Write your comment here..." required></textarea>
+            <input type="submit" value="Send Review">
+        </form>
+      </div>`;
+      
+    document.body.appendChild(overlay);
+    document.body.appendChild(popup);
+    
+    setupCommentForm();
+}
+
+function setupCommentForm() {
+  const form = document.getElementById("comment");
+  const stars = Array.from(form.querySelectorAll(".fa-star"));
+
+  stars.forEach(star => {
+    star.addEventListener("click", () => {
+      const rating = parseInt(star.dataset.value);
+      stars.forEach((s, i) => {
+        s.classList.toggle("checked", i < rating);
+      });
+    });
+  });
+
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const comment = formData.get("comment");
+    const rate = form.querySelectorAll(".fa.fa-star.checked").length;
+    const demandeId = localStorage.getItem("id");
+
+    if (rate === 0) {
+        alert("Please select a star rating.");
+        return;
+    }
+
+    try {
+        const response = await fetch("{% url 'comment' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ comment, id: demandeId, rate }),
+        });
+        const data = await response.json();
+
+        if (data.result === "success") {
+            localStorage.removeItem("mode");
+            localStorage.removeItem("id");
+            document.getElementById("harassment-popup").remove();
+            document.getElementById("notification-overlay").remove();
+        } else {
+            alert("Sorry, something went wrong. Please try again.");
+        }
+    } catch(error) {
+        console.error("Failed to submit comment:", error);
+        alert("Failed to submit comment. Please check your connection.");
+    }
+  });
+}
+</script>
+</body>

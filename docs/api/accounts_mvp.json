@@ -1,0 +1,473 @@
+{
+  "name": "Accounts MVP API",
+  "version": "v1",
+  "base_url": "/api/v1",
+  "standards": {
+    "auth": {
+      "type": "jwt",
+      "header": "Authorization: Bearer <access_token>",
+      "token_lifetimes": {
+        "access": "short (5-30 minutes)",
+        "refresh": "long (7-30 days)"
+      }
+    },
+    "response_envelope": {
+      "success": "boolean",
+      "data": "object|null",
+      "error": {
+        "code": "string|null",
+        "message": "string|null",
+        "details": "object|null"
+      },
+      "meta": "object|null"
+    },
+    "error_codes": [
+      "validation_error",
+      "authentication_failed",
+      "permission_denied",
+      "not_found",
+      "rate_limited"
+    ],
+    "pagination": {
+      "style": "page",
+      "params": {
+        "page": "integer (default 1)",
+        "page_size": "integer (default 20, max 100)"
+      },
+      "meta": {
+        "page": "integer",
+        "page_size": "integer",
+        "total": "integer"
+      }
+    },
+    "timestamps": "ISO-8601 UTC",
+    "roles": [
+      "customer",
+      "handyman",
+      "admin"
+    ]
+  },
+  "endpoints": [
+    {
+      "name": "Register",
+      "method": "POST",
+      "path": "/auth/register",
+      "auth_required": false,
+      "description": "Create a new user account.",
+      "request": {
+        "body": {
+          "email": "string (required)",
+          "password": "string (required, min 8)",
+          "first_name": "string (required)",
+          "last_name": "string (required)",
+          "role": "string (required, one of: customer, handyman)"
+        }
+      },
+      "responses": {
+        "201": {
+          "success": true,
+          "data": {
+            "user": {
+              "id": "uuid",
+              "email": "string",
+              "first_name": "string",
+              "last_name": "string",
+              "role": "string",
+              "is_verified": "boolean",
+              "created_at": "timestamp"
+            },
+            "tokens": {
+              "access": "string",
+              "refresh": "string"
+            }
+          },
+          "error": null,
+          "meta": null
+        },
+        "400": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "validation_error",
+            "message": "Invalid input.",
+            "details": {
+              "email": "already_exists"
+            }
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "method": "POST",
+      "path": "/auth/login",
+      "auth_required": false,
+      "description": "Authenticate and return JWT tokens.",
+      "request": {
+        "body": {
+          "email": "string (required)",
+          "password": "string (required)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "user": {
+              "id": "uuid",
+              "email": "string",
+              "first_name": "string",
+              "last_name": "string",
+              "role": "string",
+              "is_verified": "boolean"
+            },
+            "tokens": {
+              "access": "string",
+              "refresh": "string"
+            }
+          },
+          "error": null,
+          "meta": null
+        },
+        "401": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "authentication_failed",
+            "message": "Invalid credentials.",
+            "details": null
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "method": "POST",
+      "path": "/auth/refresh",
+      "auth_required": false,
+      "description": "Exchange refresh token for a new access token.",
+      "request": {
+        "body": {
+          "refresh": "string (required)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "access": "string"
+          },
+          "error": null,
+          "meta": null
+        },
+        "401": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "authentication_failed",
+            "message": "Refresh token invalid or expired.",
+            "details": null
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "method": "POST",
+      "path": "/auth/logout",
+      "auth_required": true,
+      "description": "Invalidate refresh token (if using blacklist).",
+      "request": {
+        "body": {
+          "refresh": "string (required)"
+        }
+      },
+      "responses": {
+        "204": {
+          "success": true,
+          "data": null,
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Forgot Password",
+      "method": "POST",
+      "path": "/auth/forgot-password",
+      "auth_required": false,
+      "description": "Send password reset email (always returns success).",
+      "request": {
+        "body": {
+          "email": "string (required)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "message": "If the email exists, a reset link was sent."
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Reset Password",
+      "method": "POST",
+      "path": "/auth/reset-password",
+      "auth_required": false,
+      "description": "Reset password using a token sent by email.",
+      "request": {
+        "body": {
+          "token": "string (required)",
+          "new_password": "string (required, min 8)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "message": "Password updated."
+          },
+          "error": null,
+          "meta": null
+        },
+        "400": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "validation_error",
+            "message": "Invalid or expired token.",
+            "details": null
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Get Current User",
+      "method": "GET",
+      "path": "/me",
+      "auth_required": true,
+      "description": "Return the authenticated user's profile.",
+      "request": {
+        "query": {}
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "email": "string",
+            "first_name": "string",
+            "last_name": "string",
+            "role": "string",
+            "phone": "string|null",
+            "avatar_url": "string|null",
+            "is_verified": "boolean",
+            "created_at": "timestamp",
+            "updated_at": "timestamp"
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Update Current User",
+      "method": "PATCH",
+      "path": "/me",
+      "auth_required": true,
+      "description": "Update profile fields for the authenticated user.",
+      "request": {
+        "body": {
+          "first_name": "string (optional)",
+          "last_name": "string (optional)",
+          "phone": "string (optional)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "email": "string",
+            "first_name": "string",
+            "last_name": "string",
+            "role": "string",
+            "phone": "string|null",
+            "avatar_url": "string|null",
+            "is_verified": "boolean",
+            "updated_at": "timestamp"
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Upload Avatar",
+      "method": "POST",
+      "path": "/me/avatar",
+      "auth_required": true,
+      "description": "Upload or replace the user's avatar.",
+      "request": {
+        "content_type": "multipart/form-data",
+        "body": {
+          "avatar": "file (required, image)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "avatar_url": "string"
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Public User Profile",
+      "method": "GET",
+      "path": "/users/{id}",
+      "auth_required": false,
+      "description": "Public profile for user discovery.",
+      "request": {
+        "path_params": {
+          "id": "uuid (required)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "first_name": "string",
+            "last_name": "string",
+            "role": "string",
+            "avatar_url": "string|null"
+          },
+          "error": null,
+          "meta": null
+        },
+        "404": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "not_found",
+            "message": "User not found.",
+            "details": null
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Create Handyman Profile",
+      "method": "POST",
+      "path": "/handyman/profile",
+      "auth_required": true,
+      "description": "Create handyman profile for a user with role=handyman.",
+      "request": {
+        "body": {
+          "bio": "string (optional)",
+          "skills": "array of strings (optional)",
+          "city": "string (required)",
+          "hourly_rate": "number (optional)",
+          "availability": "string (optional)"
+        }
+      },
+      "responses": {
+        "201": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "user_id": "uuid",
+            "bio": "string|null",
+            "skills": "array",
+            "city": "string",
+            "hourly_rate": "number|null",
+            "availability": "string|null"
+          },
+          "error": null,
+          "meta": null
+        },
+        "403": {
+          "success": false,
+          "data": null,
+          "error": {
+            "code": "permission_denied",
+            "message": "Only handyman accounts can create this profile.",
+            "details": null
+          },
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Get Handyman Profile",
+      "method": "GET",
+      "path": "/handyman/profile",
+      "auth_required": true,
+      "description": "Return the authenticated handyman's profile.",
+      "request": {
+        "query": {}
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "user_id": "uuid",
+            "bio": "string|null",
+            "skills": "array",
+            "city": "string",
+            "hourly_rate": "number|null",
+            "availability": "string|null"
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    },
+    {
+      "name": "Update Handyman Profile",
+      "method": "PATCH",
+      "path": "/handyman/profile",
+      "auth_required": true,
+      "description": "Update the authenticated handyman's profile.",
+      "request": {
+        "body": {
+          "bio": "string (optional)",
+          "skills": "array of strings (optional)",
+          "city": "string (optional)",
+          "hourly_rate": "number (optional)",
+          "availability": "string (optional)"
+        }
+      },
+      "responses": {
+        "200": {
+          "success": true,
+          "data": {
+            "id": "uuid",
+            "user_id": "uuid",
+            "bio": "string|null",
+            "skills": "array",
+            "city": "string",
+            "hourly_rate": "number|null",
+            "availability": "string|null"
+          },
+          "error": null,
+          "meta": null
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+Critical
+1) Fix DB table mismatch after app rename: set Users Meta db_table to authentification_users or rename DB table to accounts_users.
+2) Fix services/views.py profile() using undefined variable first (crash on service creation).
+3) Fix services/forms.py model reference: Services -> Service.
+4) Fix common/tools.extract_pictures to handle missing '' safely (ValueError) OR make save_service_images add trailing '*'.
+
+High
+5) Fix services/views.py FormValidationForm.description: use CharField with Textarea widget.
+6) Fix services/views.py reverse("services_list") call (URL name missing).
+7) Fix orders/forms.py widget typo: decription -> description.
+
+Security / data integrity
+8) Change destructive actions to POST with CSRF + ownership checks (delete/modify/status changes).
+9) Stop using HTTP_REFERER for service ID in ContactArtisan; use URL param or POST field.
+
+Stability / maintainability
+10) Replace print() debug statements with proper logging; remove inappropriate text in reviews/tasks.py.
+11) Move hard-coded email addresses/messages to settings/env.
+12) Add migration to rename Services -> Service (model name mismatch in migrations).

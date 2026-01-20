@@ -1,0 +1,15 @@
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 19, 2026 - 20:48:46
+Django version 5.1.5, using settings 'Bricole.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+=== DEBUGGING SOCIAL LOGIN ===
+Full extra_data: {'iss': 'https://accounts.google.com', 'azp': '541888543632-br4em4bakvqcrvfhm0mig76egevijpmm.apps.googleusercontent.com', 'aud': '541888543632-br4em4bakvqcrvfhm0mig76egevijpmm.apps.googleusercontent.com', 'sub': '100880443875836056494', 'email': 'elmehdiiskandar3@gmail.com', 'email_verified': True, 'at_hash': '4-K03bRo-FrUoiITt4TaqA', 'name': 'El Mehdi Iskandar', 'picture': 'https://lh3.googleusercontent.com/a/ACg8ocLY2gUP8MiESzv_4Xu8tZ-pb4qwGlo2apbER3OAYKpYZWgaU_c=s96-c', 'given_name': 'El Mehdi', 'family_name': 'Iskandar', 'iat': 1768856185, 'exp': 1768859785}
+Email from extra_data: elmehdiiskandar3@gmail.com
+Existing user email: elmehdiiskandar3@gmail.com
+User after save_user: el_mehdi
+User email after save_user: elmehdiiskandar3@gmail.com
+Profile picture saved for user: elmehdiiskandar3@gmail.com
+=== END DEBUGGING ===

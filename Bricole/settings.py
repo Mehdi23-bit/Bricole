@@ -62,17 +62,22 @@ INSTALLED_APPS = [
     'daphne',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'authentification',
+    'accounts',
     'allauth',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.account',
-    'Services',
-    'demand',
+    'services',
+    'orders',
     'channels',
     'django_celery_beat',
-    'comments',
+    'reviews',
+    'payments',
+    'messaging',
+    'search',
+    'rest_framework',
+    'rest_framework_simplejwt',
        
 ]
 
@@ -123,7 +128,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'Bricole.middleware.block_allauth.BlockAllauthViewsMiddleware',
-    'authentification.middleware.CrossOriginOpenerPolicyMiddleware',
+    'common.middleware.CrossOriginOpenerPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'Bricole.urls'
@@ -160,7 +165,7 @@ ASGI_APPLICATION = "Bricole.asgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Bricole',
+        'NAME': 'ahura',
         'USER': 'mahdi',
         'PASSWORD':'mahdi',
         'HOST':'localhost',
@@ -218,7 +223,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL='authentification.Users'    
+AUTH_USER_MODEL='accounts.User'    
 
 LOGOUT_REDIRECT_URL = 'signin'
 
@@ -232,21 +237,24 @@ AUTHENTICATION_BACKENDS=(
 
 SOCIALACCOUNT_LOGIN_ON_GET = True   
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-LOGIN_REDIRECT_URL = "/oauth-popup-close/"
+LOGIN_REDIRECT_URL = "/home/"
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 
 
+# default images
+
+DEFAULT_SERVICE_HEADER="defaults/service.png"
 #Media Root the path to get  files uploaded by users
 
 MEDIA_ROOT='/home/elmehdi/Desktop/media'
 
 MEDIA_URL='media/'
 
-SOCIALACCOUNT_ADAPTER = 'authentification.adapter.CustomedAdapter'
+SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomedAdapter'
 
 
 #Email settings
@@ -261,3 +269,17 @@ EMAIL_HOST_PASSWORD = 'rqgubkawjaeyfflr'
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as the broker
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Where results are stored
+
+
+
+
+## RestFrameWork settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}

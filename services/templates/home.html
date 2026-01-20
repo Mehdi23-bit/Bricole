@@ -1,0 +1,372 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Connect - Find & Hire Skilled Artisans</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        /* Global Styles & Variables */
+        :root {
+            --primary-color: black;
+            --text-dark: #222325;
+            --text-light: #62646a;
+            --border-color: #e4e5e7;
+            --background-light: #f7f7f7;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: #fff;
+            color: var(--text-dark);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* Header */
+        .main-header {
+            background: #fff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .main-header.scrolled {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .main-nav a {
+            margin: 0 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .main-nav a:hover {
+            color: var(--text-dark);
+        }
+
+        .header-actions .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .header-actions .btn-login {
+             border: 1px solid var(--primary-color);
+             color: var(--primary-color);
+             margin-right: 10px;
+        }
+        .header-actions .btn-login:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .header-actions .btn-join {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: 1px solid var(--primary-color);
+        }
+         .header-actions .btn-join:hover {
+            opacity: 0.9;
+         }
+
+
+        /* Hero Slider Section */
+        .slider-container {
+            width: 100%;
+            height: 60vh;
+            position: relative;
+            overflow: hidden;
+            background: #333;
+        }
+        .slides { display: flex; width: 300%; height: 100%; transition: transform 1s ease; }
+        .slide { width: 100vw; height: 100%; background-size: cover; background-position: center; position: relative; flex-shrink: 0; }
+        .slide::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); }
+        .slide:nth-child(1) { background-image: url('{% static "accounts/image/pict1.jpg" %}'); }
+        .slide:nth-child(2) { background-image: url('{% static "accounts/image/pict2.jpg" %}'); }
+        .slide:nth-child(3) { background-image: url('{% static "accounts/image/pict3.jpg" %}'); }
+        .slide-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; z-index: 10; width: 90%; max-width: 800px; }
+        .slide-text h1 { font-size: 3rem; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .slide-text p { font-size: 1.2rem; line-height: 1.5; }
+        .dots-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; z-index: 20; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.5); margin: 0 5px; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background-color: #fff; transform: scale(1.2); }
+        
+        /* Gigs & Categories Sections */
+        .content-section {
+            padding: 64px 0;
+        }
+        
+        .section-header {
+            margin-bottom: 32px;
+        }
+        
+        .section-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .gigs-grid, .category-grid {
+            display: grid;
+            gap: 32px;
+        }
+        
+        .gigs-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+        .category-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        
+        /* Gig Card */
+        .gig-card {
+            background: #fff; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s ease;
+        }
+        .gig-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        .gig-image img { width: 100%; height: 160px; object-fit: cover; display: block; }
+        .gig-info { padding: 12px 16px; display: flex; flex-direction: column; flex-grow: 1; }
+        .seller-info { display: flex; align-items: center; margin-bottom: 8px; }
+        .seller-info img { width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; }
+        .seller-name { font-weight: 700; color: var(--text-dark); font-size: 14px; }
+        .gig-title { font-size: 16px; line-height: 1.4; margin-bottom: 8px; color: var(--text-light); height: 45px; overflow: hidden; transition: color 0.2s; }
+        .gig-card:hover .gig-title { color: var(--primary-color); }
+        .gig-rating { display: flex; align-items: center; color: #ffbe5b; font-size: 14px; margin-bottom: 12px; }
+        .gig-rating .fa-star { margin-right: 4px; color:black; }
+        .rating-score { font-weight: bold; color:black;}
+        .rating-count { color: var(--text-light); margin-left: 4px; }
+        .gig-footer { border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .gig-price span { color: var(--text-light); font-size: 12px; }
+        .gig-price { font-size: 18px; font-weight: 600; color: var(--text-dark); }
+        .gig-footer .fa-heart { color: var(--text-light); cursor: pointer; transition: color 0.2s; }
+        .gig-footer .fa-heart:hover { color: var(--primary-color); }
+
+        /* Browse by Category Section */
+        #categories { background: var(--background-light); }
+        .category-card { position: relative; border-radius: 8px; overflow: hidden; color: #fff; }
+        .category-card img { width: 100%; height: 270px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+        .category-card:hover img { transform: scale(1.1); }
+        .category-card::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
+        .category-info { position: absolute; bottom: 20px; left: 20px; z-index: 5; }
+        .category-info h3 { font-size: 20px; font-weight: 700; }
+        
+        /* Features Section */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: center; }
+        .feature-item i { font-size: 40px; color: var(--primary-color); margin-bottom: 16px; }
+        .feature-item h3 { font-size: 18px; margin-bottom: 8px; }
+        .feature-item p { color: var(--text-light); line-height: 1.6; }
+        
+        /* CTA Section */
+        .cta-section { background: var(--primary-color) url('{% static "accounts/image/cta-bg.svg" %}') no-repeat center center; background-size: cover; padding: 80px 0; text-align: center; color: #fff; }
+        .cta-section h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
+        .cta-section .btn-cta { background: #fff; color: var(--primary-color); padding: 14px 30px; font-size: 18px; font-weight: 700; border-radius: 5px; transition: all 0.3s; }
+        .cta-section .btn-cta:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Footer */
+        .main-footer { background: var(--text-dark); color: #fff; padding: 60px 0 30px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 30px; margin-bottom: 40px; }
+        .footer-column h4 { font-size: 16px; margin-bottom: 20px; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 12px; }
+        .footer-column ul li a { color: var(--border-color); transition: color 0.2s; }
+        .footer-column ul li a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid var(--text-light); padding-top: 30px; display: flex; justify-content: space-between; align-items: center; color: var(--border-color); }
+        .footer-socials a { margin-left: 15px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+   {% include 'artisan_header.html' %}
+
+    <main>
+        <section class="slider-container">
+            <div class="slides">  
+                <div class="slide">
+                    <div class="slide-text">
+                        <h1>Handcrafted Excellence, Delivered.</h1>
+                        <p>Discover our collection of premium artisan products made with passion and expertise.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-text">
+                        <h1>Tradition Meets Modern Innovation</h1>
+                        <p>Our unique designs blend timeless craftsmanship with modern aesthetics.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-text">
+                        <h1>Sustainable & Eco-friendly Creations</h1>
+                        <p>Every piece is created with respect for nature and sustainable practices.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="dots-container"></div>
+        </section>
+
+        <section id="gigs" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Popular Professional Services</h2>
+                </div>
+               
+                <div class="gigs-grid">
+                    {% for service in services %}
+                    <a href="#" class="gig-card">
+                        <div class="gig-image"><img src="{{ service.first.url }}" alt="Gig"></div>
+                        <div class="gig-info">
+                            <div class="seller-info">
+                                <img src="{{ service.artisan.avatar.url }}" alt="Seller">
+                                <span class="seller-name">J{{ service.artisan.username }}</span>
+                            </div>
+                            <p class="gig-title">I will do stunning figma website and UI UX design</p>
+                            <div class="gig-rating">
+                                <i class="fas fa-star"></i><span class="rating-score">{{ service.rate }}</span><span class="rating-count">(364)</span>
+                            </div>
+                        </div>
+                        
+                    </a>
+                    {%endfor%}
+                            </div>
+        </section>
+
+        <section id="categories" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Browse by Category</h2>
+                </div>
+                <div class="category-grid">
+                  {% for category in Categories %}
+                    <a href="#" class="category-card">
+                        <img src="{{ category.photo.url }}" alt="Music">
+                        <div class="category-info"><h3>{{ category.name }}</h3></div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="content-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center;">
+                    <h2>A Whole World of Artisan Talent at Your Fingertips</h2>
+                </div>
+                <div class="features-grid">
+                    <div cclass="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Protected Payments</h3>
+                        <p>Your payment is held securely until you're 100% satisfied with the work.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-headset"></i>
+                        <h3>24/7 Support</h3>
+                        <p>Our dedicated support team is here to help you around the clock.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-search-dollar"></i>
+                        <h3>Clear, Upfront Pricing</h3>
+                        <p>No surprises. Projects are priced upfront so you know what you'll pay.</p>
+                    </div>
+                     <div class="feature-item">
+                        <i class="fas fa-medal"></i>
+                        <h3>Vetted Professionals</h3>
+                        <p>We hand-vet our pro artisans to ensure you get top-quality talent.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Find the perfect artisan for your project today.</h2>
+                <a href="#" class="btn btn-cta">Get Started</a>
+            </div>
+        </section>
+{% include 'footer.html' %}
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Slider Logic
+            const slidesContainer = document.querySelector('.slides');
+            const dotsContainer = document.querySelector('.dots-container');
+            if (slidesContainer) {
+                let currentSlide = 0;
+                const slides = document.querySelectorAll('.slide');
+                const totalSlides = slides.length;
+
+                // Create dots
+                for (let i = 0; i < totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('dot');
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToSlide(i));
+                    dotsContainer.appendChild(dot);
+                }
+                const dots = document.querySelectorAll('.dot');
+
+                function updateSlider() {
+                    slidesContainer.style.transform = `translateX(-${currentSlide * 100}vw)`;
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[currentSlide].classList.add('active');
+                }
+                
+                function goToSlide(slideIndex) {
+                    currentSlide = slideIndex;
+                    updateSlider();
+                }
+                
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % totalSlides;
+                    slidesContainer.style.transition = 'transform 1s ease';
+                    updateSlider();
+                }
+
+                setInterval(nextSlide, 5000);
+            }
+            
+            // Header Scroll Effect
+            const header = document.getElementById('mainHeader');
+            window.addEventListener('scroll', () => {
+                if(window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

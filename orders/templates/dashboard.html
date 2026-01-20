@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - B&W</title>
+    <style>
+        /* Basic Reset & General Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333333; /* Default dark gray text color */
+            line-height: 1.6;
+            display: flex;
+            justify-content: center; /* Center the main container */
+            flex-direction:column;
+        }
+
+        .dashboard-container {
+            display: flex;
+          
+            width: 100%;
+            background-color: #ffffff; /* White background for the content area */
+            border-radius: 8px; /* Optional: round the corners of the entire dashboard */
+            /* box-shadow: 0 2px 10px rgba(0,0,0,0.08); Optional: subtle shadow */
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 418px; /* Fixed width for sidebar */
+            padding: 20px;
+            background-color: #ffffff; /* White background for sidebar cards */
+            border-right: 1px solid #cccccc; /* Gray separator line */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between sidebar cards */
+            margin-left:200px;
+        }
+
+        .card {
+            background-color: #ffffff; /* Card background */
+            border: 1px solid #dddddd; /* Lighter gray border for cards */
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .profile-card .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px; /* Center avatar and add bottom margin */
+            display: block;
+            border: 2px solid #bbbbbb; /* Gray border for avatar */
+        }
+
+        .profile-card h2 {
+            font-size: 18px;
+            color: #000000; /* Black for main headings */
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .profile-card .username {
+            font-size: 14px;
+            color: #555555; /* Darker gray for username */
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .btn-secondary { /* For "View Profile", "View Progress", "Set Availability" */
+            background-color: #ffffff;
+            color: #000000; /* Black text */
+            border-color: #000000; /* Black border */
+        }
+
+        .btn-secondary:hover {
+            background-color: #f2f2f2; /* Very light gray on hover */
+        }
+
+        .btn-primary { /* Was green, now for primary dark action */
+            background-color: #000000; /* Black for primary actions */
+            color: #ffffff; /* White text */
+            border-color: #000000;
+        }
+        .btn-primary:hover {
+            background-color: #222222; /* Slightly lighter black */
+        }
+
+
+        .level-overview .stat-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #444444; /* Medium gray for stat labels */
+        }
+        .level-overview .stat-item .label {}
+        .level-overview .stat-item .value {
+            font-weight: 600;
+            color: #000000; /* Black for stat values */
+        }
+        .level-overview .stat-item .value.new-seller {
+            color: #000000; /* Black, still bold */
+            font-weight: bold;
+        }
+        .level-overview h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #000000; /* Black */
+        }
+
+        .availability-card h3, .earnings-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #000000; /* Black */
+        }
+        .availability-card p {
+            font-size: 14px;
+            color: #555555; /* Darker gray */
+            margin-bottom: 15px;
+        }
+        .earnings-card .amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000000; /* Black */
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1; /* Takes remaining space */
+            padding: 30px;
+            background-color: #ffffff; /* Main content area background */
+            display: flex;
+            flex-direction: column;
+            gap: 25px; /* Space between main content sections */
+        }
+
+        .welcome-header h1 {
+            font-size: 24px;
+            color: #000000; /* Black */
+            margin-bottom: 5px;
+        }
+        .welcome-header p {
+            font-size: 14px;
+            color: #555555; /* Darker gray */
+        }
+
+        .alert-bar {
+            background-color: #eeeeee; /* Light gray for alert */
+            color: #000000; /* Black text for alert */
+            border: 1px solid #bbbbbb; /* Gray border for alert */
+            border-left: 4px solid #555555; /* Darker gray prominent left border */
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .alert-bar .alert-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-bar .alert-message .icon {
+            font-weight: bold;
+            font-size: 18px; /* Make icon a bit larger */
+        }
+        .alert-bar .btn-verify { /* Button inside the alert */
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: transparent;
+            color: #000000; /* Black text */
+            border: 1px solid #000000; /* Black border */
+            font-weight: bold;
+            min-width: 80px;
+        }
+        .alert-bar .btn-verify:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+
+        .promo-box {
+            background-color: #f9f9f9; /* Very light gray, almost white */
+            border: 1px solid #dddddd; /* Light gray border */
+            border-radius: 6px;
+            padding: 20px;
+            position: relative; /* For positioning the close button */
+        }
+        .promo-box h3 {
+            font-size: 18px;
+            color: #000000; /* Black */
+            margin-bottom: 8px;
+        }
+        .promo-box p {
+            font-size: 14px;
+            color: #444444; /* Medium Gray */
+            margin-bottom: 0;
+        }
+        .promo-box .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #333333; /* Dark gray for close icon */
+            cursor: pointer;
+        }
+        .promo-box .close-btn:hover {
+            color: #000000; /* Black on hover */
+        }
+
+        .active-orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #cccccc; /* Gray separator line */
+        }
+        .active-orders-header h2 {
+            font-size: 18px;
+            color: #000000; /* Black */
+        }
+        .active-orders-header select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #bbbbbb; /* Gray border for select */
+            font-size: 14px;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* Responsive adjustments (basic example) */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #cccccc;
+            }
+        }
+        @media (max-width: 768px) {
+            .alert-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .alert-bar .btn-verify {
+                align-self: flex-start; /* Or flex-end */
+            }
+        }
+        .item{
+            display:flex;
+            align-items:center;
+            justify-content:space-around;
+            border:1px solid black;
+            padding:10px;
+            margin-top:20px;
+        }
+        .service-img{
+            width:110px;
+        }
+        .profile-service{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            width:257px;
+        }
+        .profile-img{
+            width:30px;
+            height:30px;
+            border-radius:100%;
+        }
+        .elements{
+            display:flex;
+            justify-content:center;
+            flex-direction:column;
+            align-items:center;
+        }
+        .item a{
+            text-decoration:none;
+            color:black;
+            font-weight: 900;
+            font-size: large;
+        }
+        .complete{
+            padding: 0px 17px;
+            color:white;
+            background-color: #918c8c;
+            border-radius: 36px;
+        }
+
+        /* Styles for Service CRUD Section START */
+        .manage-services-section {
+            margin-top: 25px; /* Add some space above this new section */
+        }
+
+        .manage-services-section h2, .manage-services-section h3 {
+            color: #000000; /* Black */
+            margin-bottom: 15px;
+        }
+
+        .service-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #dddddd;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .service-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .service-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .service-form input[type="text"],
+        .service-form input[type="number"],
+        .service-form textarea,
+        .service-form select,
+        .service-form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .service-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .existing-services-list .service-entry {
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .service-entry .service-info {
+            flex-grow: 1; /* Takes available space */
+            margin-right: 15px; /* Space before action buttons */
+        }
+        
+        .service-entry .service-info h4 {
+            margin: 0 0 5px 0;
+            color: #000000;
+        }
+
+        .service-entry .service-info p {
+            margin: 0 0 3px 0;
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .service-entry .service-actions {
+            display: flex; /* Keep buttons in a row */
+            align-items: center;
+            flex-shrink: 0; /* Prevent buttons from shrinking too much */
+        }
+        
+        .service-entry .service-actions .btn {
+            margin-left: 10px;
+            padding: 8px 12px; 
+            font-size: 13px;
+            width: auto; /* Override full width from general .btn */
+            display: inline-block; /* Adjust display for auto width */
+        }
+        .service-entry .service-actions .btn:first-child {
+            margin-left: 0; /* No left margin for the first button in the group if needed */
+        }
+
+
+        .btn-delete-service { 
+            background-color: black; 
+            color: white;
+            border-color: black;
+        }
+        .btn-delete-service:hover {
+            background-color:black;
+            border-color: black;
+        }
+
+        /* Modal Styles (Basic) START */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 8% auto; /* Adjusted margin for better centering */
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%; /* Responsive width */
+            max-width: 600px; /* Max width for larger screens */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            position: relative;
+        }
+
+        .modal-header {
+            padding-bottom:10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom:20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin:0;
+            font-size: 20px; /* Adjusted font size for modal header */
+        }
+
+        .close-modal-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal-btn:hover,
+        .close-modal-btn:focus {
+            color: black;
+            text-decoration: none;
+        }
+        /* Modal Styles (Basic) END */
+        /* Styles for Service CRUD Section END */
+
+        .empty-div{
+            display:block; 
+        }
+.empty{
+margin-left:auto;
+margin-right:auto;
+}
+    </style>
+</head>
+<body>
+    {% include 'artisan_header.html' %}
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="profile-card card">
+                <img src="{{ user.avatar.url }}" alt="User Avatar" class="avatar"> <h2>{{ user.first_name }}</h2>
+                <p class="username">@{{user.username}}</p>
+                <button class="btn btn-secondary">View profile</button>
+            </div>
+
+            <div class="level-overview card">
+                <h3>About you</h3>
+                <p>{{ user.about }}.</p>
+                <button class="btn btn-secondary" style="margin-top: 15px;"  onclick="openModel()">About you</button>
+            </div>
+            <div id="Aboutmodel" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>About you</h2>
+                        <span class="close-modal-btn" onclick="closeModal()">&times;</span>
+                    </div>
+                    <form id="editServiceFormModal" class="service-form" style="margin-bottom: 0;" enctype="multipart/form-data"> <input type="hidden" id="editServiceId" name="id">
+                       
+                        <div class="form-group">
+                            <label for="editServiceDescription">About you</label>
+                            <textarea id="editServiceDescription" name="about" required></textarea>
+                        </div>
+                       
+                        <button type="submit" class="btn btn-primary" style="width: auto; display: inline-block;">Save Changes</button>
+                         <button type="button" class="btn btn-secondary" onclick="closeModal()" style="margin-left: 10px; width: auto; display: inline-block;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="availability-card card">
+                <h3>Availability</h3>
+                <p>While unavailable, your Gigs are hidden and you will not receive new orders.</p>
+                <button class="btn btn-secondary" onclick="openAvailabilityModal()">Set your availability</button>
+            </div>
+
+            <div id="availabilityModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Set Your Availability</h2>
+                        <span class="close-modal-btn" onclick="closeAvailabilityModal()">&times;</span>
+                    </div>
+                    <form id="availabilityForm" class="service-form" style="margin-bottom: 0;">
+                        <div class="form-group">
+                            <p>Set your status. While unavailable, you won't receive new orders.</p>
+                            <label for="availabilityStatus">Status</label>
+                            <select id="availabilityStatus" name="status">
+                                <option value="available">Available</option>
+                                <option value="unavailable">Unavailable</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: auto; display: inline-block;">Save Status</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAvailabilityModal()" style="margin-left: 10px; width: auto; display: inline-block;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+            <div class="welcome-header">
+                <h1>Welcome, {{ user.username }}</h1>
+            
+            </div>
+
+            
+
+            <div class="active-orders-section">
+                <div class="active-orders-header">
+                    <h2 id="need">Active orders - 0</h2>
+                    <select name="order-filter" id="order-filter">
+                        <option value="New orders">New orders</option>
+                        <option value="Active orders">Active orders</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div id="new-orders-list" class="order-list">
+                    {% for demande in new_demandes %}
+                    <div class="item">
+                        <div class="profile-service">
+                            <img class="service-img" src="{{ demande.service.first.url }}" alt="{{ demande.service.title }}">
+                            <img class="profile-img" src="{{ demande.client.avatar.url }}" alt="{{ demande.user.first_name }}">
+                            <p>{{ demande.user.first_name }}</p>    
+                        </div>
+                        <div class="elements"><p>Date Requested</p><p>{{ demande.created_at|date:"d/m/Y" }}</p></div>
+                        <div class="elements"><p>Service Title</p><p>{{ demande.service.title }}</p></div>
+                        <div class="elements"><p>Order ID</p><p>{{ demande.id }}</p></div>
+                        <div class="elements"><p>Status</p><p style="color: #007BFF; font-weight: bold;">New</p></div>
+                        <a href="#" id="accept" data-id={{demande.id}}>Accept</a>
+                        <a href="#" id="refuse" data-id={{demande.id}}>Refuse</a>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; padding: 20px; color: #555;">You have no new orders.</p>
+                    {% endfor %}
+                </div>
+
+                <div id="active-orders-list" class="order-list" style="display: none;">
+                    {% for demande in cur_demandes %}
+                    <div class="item">
+                        <div class="profile-service">
+                            <img class="service-img" src="{{ demande.service.first.url }}" alt="{{ demande.service.title }}">
+                            <img class="profile-img" src="{{ demande.client.avatar.url }}" alt="{{ demande.user.first_name }}">
+                            <p>{{ demande.user.first_name }}</p>    
+                        </div>
+                        <div class="elements"><p>Date Accepted</p><p>{{ demande.updated_at|date:"d/m/Y" }}</p></div>
+                        <div class="elements"><p>Service Title</p><p>{{ demande.service.title }}</p></div>
+                        <div class="elements"><p>Order ID</p><p>{{ demande.id }}</p></div>
+                        <div class="elements"><p>Status</p><p style="color: #28A745; font-weight: bold;">Active</p></div>
+                        <a data-id={{ demande.id }} id="complete">Completed</a>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; padding: 20px; color: #555;">You have no active orders in progress.</p>
+                    {% endfor %}
+                </div>
+
+                <div id="completed-orders-list" class="order-list" style="display: none;">
+                    {% for demande in hist_demandes %}
+                    <div class="item">
+                        <div class="profile-service">
+                            <img class="service-img" src="{{ demande.service.first.url }}" alt="{{ demande.service.title }}">
+                            <img class="profile-img" src="{{ demande.user.avatar.url }}" alt="{{ demande.user.first_name }}">
+                            <p>{{ demande.user.first_name }}</p>    
+                        </div>
+                        <div class="elements"><p>Date Completed</p><p>{{ demande.updated_at|date:"d/m/Y" }}</p></div>
+                        <div class="elements"><p>Service Title</p><p>{{ demande.service.title }}</p></div>
+                        <div class="elements"><p>Order ID</p><p>{{ demande.id }}</p></div>
+                        <div class="elements"><p>Status</p><p class="complete">Completed</p></div>
+                        <a href="#">View</a>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; padding: 20px; color: #555;">You have no completed orders.</p>
+                    {% endfor %}
+                </div>
+
+                <div id="cancelled-orders-list" class="order-list" style="display: none;">
+                    {% for demande in dec_demandes %}
+                     <div class="item">
+                        <div class="profile-service">
+                            <img class="service-img" src="{{ demande.service.first.url }}" alt="{{ demande.service.title }}">
+                            <img class="profile-img" src="{{ demande.user.avatar.url }}" alt="{{ demande.user.first_name }}">
+                            <p>{{ demande.user.first_name }}</p>    
+                        </div>
+                        <div class="elements"><p>Date Cancelled</p><p>{{ demande.updated_at|date:"d/m/Y" }}</p></div>
+                        <div class="elements"><p>Service Title</p><p>{{ demande.service.title }}</p></div>
+                        <div class="elements"><p>Order ID</p><p>{{ demande.id }}</p></div>
+                        <div class="elements"><p>Status</p><p style="color: #DC3545; font-weight: bold;">Cancelled</p></div>
+                        <a href="#">View</a>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; padding: 20px; color: #555;">You have no cancelled orders.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="manage-services-section card">
+                <h2>Manage Your Services</h2>
+
+                <h3>Add a New Service</h3>
+                <form id="addServiceForm" class="service-form">
+                    <div class="form-group">
+                        <label for="serviceTitle">Service Title</label>
+                        <input type="text" id="serviceTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDescription">Description</label>
+                        <textarea id="serviceDescription" name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="servicePrice">Price ($)</label>
+                        <input type="number" id="servicePrice" name="files" min="0" step="0.01"  multiple required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceCategory">Category</label>
+                        <select id="serviceCategory" name="category">
+                            {%  for category in categories %}
+                            <option value="{{category.id}}">{{category.name}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceImage">Service Image</label>
+                        <input type="file" id="serviceImage" name="files" accept="image/*" multiple>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: auto; display: inline-block;">Add Service</button>
+                </form>
+
+                <h3>Your Current Services</h3>
+                <div class="existing-services-list" id="existingServicesList">
+                    {% for service in services %}
+                    <div class="service-entry">
+                        <div class="service-info">
+                            <h4>Service Name: {{service.title}}</h4>
+                            <p>Category: {{service.categorie.name}}</p>
+                           
+                            <p>Description: {{service.description}}</p>
+                        </div>
+                        <div class="service-actions">
+                            <button class="btn btn-secondary" onclick='openEditServiceModal({{ service.id }},"{{service.title}}","{{service.description}}","{{service.categorie.name}}")'>Edit</button>
+                            <button class="btn btn-delete-service"  onclick="deleteService({{ service.id }})">Delete</button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-div">
+                    <p class="empty">you don't have a service</p>
+                    </div>
+                    {% endfor %}
+                    
+                    </div>
+            </div>
+            <div id="editServiceModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Service</h2>
+                        <span class="close-modal-btn" onclick="closeEditServiceModal()">&times;</span>
+                    </div>
+                    <form id="editServiceFormModal" class="service-form" style="margin-bottom: 0;" enctype="multipart/form-data"> <input type="hidden" id="editServiceId" name="id">
+                        <div class="form-group">
+                            <label for="editServiceTitle">Service Title</label>
+                            <input type="text" id="editServiceTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editServiceDescription">Description</label>
+                            <textarea id="editServiceDescription" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editServicePrice">Price ($)</label>
+                            <input type="number" id="editServicePrice" name="price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editServiceCategory">Category</label>
+                            <select id="editServiceCategory" name="category">
+                                {%  for category in categories %}
+                                <option value="{{category.id}}">{{category.name}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editServiceImage">Service Image (leave blank to keep current)</label>
+                            <input type="file" id="editServiceImage" name="photos"   accept="image/*" multiple>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: auto; display: inline-block;">Save Changes</button>
+                         <button type="button" class="btn btn-secondary" onclick="closeEditServiceModal()" style="margin-left: 10px; width: auto; display: inline-block;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+            </main>
+    </div>
+   
+    {% include 'footer.html' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Order Status Change Handling ---
+            const acceptButton = document.getElementById("accept");
+            const completeButton = document.getElementById("complete");
+            const refusebtn = document.getElementById("refuse");
+
+            if (acceptButton) {
+                acceptButton.addEventListener("click", (e) => {
+                    const data = {'id': e.target.dataset.id};
+                    fetch("{% url 'change_status' %}", {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                        body: JSON.stringify(data)
+                    }).then(response => response.json()).then(data => {
+                        console.log('Success:', data);
+                        window.location.reload();
+                    }).catch(error => console.error('Error:', error));
+                });
+            }
+
+            if (completeButton) {
+                completeButton.addEventListener("click", (e) => {
+                    const data = {'id': e.target.dataset.id};
+                    fetch("{% url 'change_status' %}", {
+                        method: 'PUT',
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                        body: JSON.stringify(data)
+                    }).then(response => response.json()).then(data => {
+                        console.log('Success:', data);
+                        window.location.reload();
+                    }).catch(error => console.error('Error:', error));
+                });
+            }
+
+            if (refusebtn) {
+                refusebtn.addEventListener("click", (e) => {
+                    const data = {'id': e.target.dataset.id};
+                    fetch("{% url 'change_status' %}", {
+                        method: 'PATCH',
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                        body: JSON.stringify(data)
+                    }).then(response => response.json()).then(data => {
+                        console.log('Success:', data);
+                        window.location.reload();
+                    }).catch(error => console.error('Error:', error));
+                });
+            }
+
+            // --- Dynamic Order Filtering ---
+            const orderFilter = document.getElementById("order-filter");
+            const heading = document.getElementById("need");
+            const allOrderLists = {
+                "New orders": document.getElementById("new-orders-list"),
+                "Active orders": document.getElementById("active-orders-list"),
+                "Completed": document.getElementById("completed-orders-list"),
+                "Cancelled": document.getElementById("cancelled-orders-list")
+            };
+
+            function updateOrderView() {
+                const selectedValue = orderFilter.value;
+                const counts = {
+                    "New orders": {{ new_demandes|length }},
+                    "Active orders": {{ cur_demandes|length }},
+                    "Completed": {{ hist_demandes|length }},
+                    "Cancelled": {{ dec_demandes|length }}
+                };
+                heading.textContent = `${selectedValue} - ${counts[selectedValue]}`;
+                for (const key in allOrderLists) {
+                    if (allOrderLists[key]) allOrderLists[key].style.display = 'none';
+                }
+                if (allOrderLists[selectedValue]) {
+                    allOrderLists[selectedValue].style.display = 'block';
+                }
+            }
+
+            if (orderFilter) {
+                orderFilter.addEventListener("change", updateOrderView);
+                orderFilter.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // --- Modal Handling & Form Submissions ---
+        const editModal = document.getElementById('editServiceModal');
+        const aboutModal = document.getElementById("Aboutmodel");
+        const availabilityModal = document.getElementById('availabilityModal'); // New
+        const addServiceForm = document.getElementById('addServiceForm');
+        const editServiceFormModal = document.getElementById('editServiceFormModal');
+
+        // "About You" Modal Functions
+        function openModel() {
+            if (aboutModal) aboutModal.style.display = 'block';
+        }
+        function closeModal() {
+            if (aboutModal) aboutModal.style.display = 'none';
+        }
+
+        // "Edit Service" Modal Functions
+        function openEditServiceModal(serviceId, title, description, categorie) {
+            if (document.getElementById('editServiceId')) document.getElementById('editServiceId').value = serviceId;
+            if (document.getElementById('editServiceTitle')) document.getElementById('editServiceTitle').value = title;
+            if (document.getElementById('editServiceDescription')) document.getElementById('editServiceDescription').value = description;
+            if (document.getElementById('editServicePrice')) document.getElementById('editServicePrice').value = "150.00";
+            if (document.getElementById('editServiceCategory')) document.getElementById('editServiceCategory').value = categorie;
+            if (document.getElementById('editServiceImage')) document.getElementById('editServiceImage').value = '';
+            if (editModal) editModal.style.display = 'block';
+        }
+        function closeEditServiceModal() {
+            if (editModal) editModal.style.display = 'none';
+        }
+
+        // --- NEW: Availability Modal Functions ---
+        function openAvailabilityModal() {
+            if (availabilityModal) availabilityModal.style.display = 'block';
+        }
+        function closeAvailabilityModal() {
+            if (availabilityModal) availabilityModal.style.display = 'none';
+        }
+
+        // Delete Service Function
+        function deleteService(serviceId) {
+            const formData = new FormData();
+            formData.append("id", serviceId);
+            fetch("{% url 'deleteService' %}", {
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                body: formData
+            }).then(response => response.json()).then(data => {
+                console.log('Success:', data);
+                window.location.reload();
+            }).catch(error => console.error('Error:', error));
+        }
+
+        // Add Service Form Submission
+        if (addServiceForm) {
+            addServiceForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                fetch("{% url 'profile' %}", {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    console.log('Success:', data);
+                    window.location.reload();
+                }).catch(error => console.error('Error:', error));
+            });
+        }
+
+        // Edit Service Form Submission
+        if (editServiceFormModal) {
+            editServiceFormModal.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                fetch("{% url 'modifyService' %}", {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    console.log('Success:', data);
+                    window.location.reload();
+                }).catch(error => console.error('Error:', error));
+            });
+        }
+
+        // Global click listener to close modals
+        window.addEventListener('click', function (event) {
+            if (event.target == editModal) closeEditServiceModal();
+            if (event.target == aboutModal) closeModal();
+            if (event.target == availabilityModal) closeAvailabilityModal(); // New
+        });
+
+    </script>
+</body>
+</html>
